@@ -1,0 +1,56 @@
+﻿@page
+@model FilmClient.Pages.Medium.IndexModel
+@{
+    ViewData["Title"] = "List All Medium Entries";
+}
+
+<h2>@ViewData["Title"]</h2>
+<div><a asp-page="./Create">Create a new medium entry</a></div>
+<table class="table table-bordered tab-content table-condensed table-striped">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Media[0].Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Media[0].Year)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Media[0].MediumType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Media[0].Location)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Media[0].Key)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Media)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Year)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MediumType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Location)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Key)
+                </td>
+                <td>
+                    <a asp-page="./Edit" asp-route-key="@item.Key">Edit</a> |
+                    <a asp-page="./Delete" asp-route-key="@item.Key">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

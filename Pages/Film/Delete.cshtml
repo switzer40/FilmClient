@@ -1,0 +1,122 @@
+﻿@page
+@model FilmClient.Pages.Film.DeleteModel
+@{
+    ViewData["Title"] = "Delete A Film Entry";
+}
+<h2>@ViewData["Title"]</h2>
+<hr />
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>FilmToDelete</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.FilmToDelete.Title)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FilmToDelete.Title)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.FilmToDelete.Year)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FilmToDelete.Year)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.FilmToDelete.Length)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FilmToDelete.Length)
+        </dd>
+    </dl>
+    @if (Model.HasMedia)
+    {
+        <h4>The folowing media must be deleted first</h4>
+        <hr />
+        <table class="table table-bordered table-condensed">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.AffectedMedia[0].Title)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.AffectedMedia[0].Year)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.AffectedMedia[0].MediumType)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+               @foreach (var item in Model.AffectedMedia)
+               {
+                   <tr>
+                       <td>
+                           @Html.DisplayFor(modelItem => item.Title)
+                       </td>
+                       <td>
+                           @Html.DisplayFor(modelItem => item.Year)
+                       </td>
+                       <td>
+                           @Html.DisplayFor(modelItem => item.MediumType)
+                       </td>
+                   </tr>
+               }
+            </tbody>
+        </table>
+        <hr />
+        @if (Model.RelationCount > 0)
+        {
+            <h4>The following relations must be deleted first</h4>
+            <hr />
+            <table class="table table-bordered table-condensed">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.AffectedRelations[0].Title)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.AffectedRelations[0].Year)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.AffectedRelations[0].LastName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.AffectedRelations[0].Birthdate)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.AffectedRelations[0].Role)
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.AffectedRelations)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Title)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Year)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.LastName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Birthdate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Role)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    }
+    <form method="post">
+        <input type="hidden" asp-for="FilmToDelete.Key" />
+        <input type="submit" value="Delete" class="btn btn-default" /> |
+        <a asp-page="./Index">Back to List</a>
+    </form>
+</div>

@@ -1,0 +1,50 @@
+﻿@page
+@model FilmClient.Pages.Film.IndexModel
+@{
+    ViewData["Title"] = "List All Film Entries";
+}
+<h2>@ViewData["Title"]</h2>
+<div><a asp-page="./Create">Create a new Film entry</a></div>
+<table class="table-condensed table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Films[0].Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Films[0].Year)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Films[0].Length)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Films[0].Key)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Films)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Year)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Length)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelitem => item.Key)
+                </td>
+                <td>
+                    <a asp-page="Edit" asp-route-key="@item.Key">Edit</a> |
+                    <a asp-page="Info" asp-route-key="@item.Key">Info</a> |
+                    <a asp-page="Delete" asp-route-key="@item.Key">Delete</a>
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>

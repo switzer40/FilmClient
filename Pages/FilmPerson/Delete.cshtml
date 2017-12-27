@@ -1,0 +1,50 @@
+﻿@page
+@model FilmClient.Pages.FilmPerson.DeleteModel
+@{
+    ViewData["Title"] = "Delete a Film/Person relation";
+}
+<h2>@ViewData["Title"]</h2>
+<hr />
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>FilmPersonToDelete</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.FilmPersonToDelete.Title)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FilmPersonToDelete.Title)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.FilmPersonToDelete.Year)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FilmPersonToDelete.Year)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.FilmPersonToDelete.LastName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FilmPersonToDelete.LastName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.FilmPersonToDelete.Birthdate)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FilmPersonToDelete.Birthdate)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.FilmPersonToDelete.Role)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FilmPersonToDelete.Role)
+        </dd>
+    </dl>
+
+    <form method="post">
+        <input type="hidden" asp-for="FilmPersonToDelete.Key" />
+        <input type="submit" value="Delete" class="btn btn-default" /> |
+        <a asp-page="./Index">Back to List</a>
+    </form>
+</div>
