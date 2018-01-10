@@ -1,0 +1,48 @@
+﻿@page
+@model FilmClient.Pages.Film.EditModel
+
+@{
+    ViewData["Title"] = "Edit A Film Entry";
+}
+
+<h2>@ViewData["Title"]</h2>
+<blockquote>Since the properties<nbsp/>
+            Title and Year<nbsp/>
+    participate in the primary key of a film entry<nbsp/>
+    you may not edit those properties on this page.<nbsp/>
+    If you must edit one of those two properties,<nbsp/>
+    you might try deleting and recreating the entry with the desired values.</blockquote>
+<h3>Film To Edit</h3>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="FilmToEdit.Title" class="control-label"></label>
+                <input asp-for="FilmToEdit.Title" class="form-control"readonly />
+                <span asp-validation-for="FilmToEdit.Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FilmToEdit.Year" class="control-label"></label>
+                <input asp-for="FilmToEdit.Year" class="form-control" readonly />
+                <span asp-validation-for="FilmToEdit.Year" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FilmToEdit.Length" class="control-label"></label>
+                <input asp-for="FilmToEdit.Length" class="form-control" autofocus />
+                <span asp-validation-for="FilmToEdit.Length" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="hidden" asp-for="FilmToEdit.Key" />
+                <input type="submit" value="Save" class="btn btn-default" /> |
+                <a asp-page="./Index">Back to List</a>
+            </div>
+        </form>
+    </div>    
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

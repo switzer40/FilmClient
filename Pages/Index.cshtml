@@ -1,0 +1,38 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+<div class="container">
+    <h2>The collection currently contains</h2>    
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            Films:<nbsp></nbsp>
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FilmCount)
+        </dd>
+        <dt>
+            People: <nbsp></nbsp>
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.PersonCount)
+        </dd>
+        <dt>
+            Media: <nbsp></nbsp>
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.MediumCount)
+        </dd>
+        <dt>
+            Film/Person Relations: <nbsp></nbsp>
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.RelationCount)
+    </dd>
+    </dl>
+</div>
+
+
+

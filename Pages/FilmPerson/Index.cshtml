@@ -1,0 +1,62 @@
+﻿@page
+@model FilmClient.Pages.FilmPerson.IndexModel
+@{
+    ViewData["Title"] = "List All Film/Person Relations";
+}
+
+<h2>@ViewData["Title"]</h2>
+<div><a asp-page="./Create">Create a new Film/Person relation</a></div>
+<table class="table table-bordered table-condensed table-striped">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FilmPeople[0].Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FilmPeople[0].Year)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FilmPeople[0].Contributor)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FilmPeople[0].ContributorBirthdate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FilmPeople[0].Role)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FilmPeople[0].Key)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.FilmPeople)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Year)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Contributor)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ContributorBirthdate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Role)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Key)
+                </td>
+                <td>
+                    <a asp-page="./Edit" asp-route-key="@item.Key">Edit</a> |
+                    <a asp-page="./Delete" asp-route-key="@item.Key">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
