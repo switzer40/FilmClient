@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 using FilmClient.Pages.Shared;
 using FilmAPI.Common.Services;
+using FilmAPI.Common.Utilities;
 
 namespace FilmClient.Pages.Film
 {

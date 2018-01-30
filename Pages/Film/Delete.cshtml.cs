@@ -9,6 +9,7 @@ using FilmClient.Pages.Shared;
 using FilmClient.Pages.Medium;
 using FilmClient.Pages.FilmPerson;
 using FilmAPI.Common.Services;
+using FilmAPI.Common.Utilities;
 
 namespace FilmClient.Pages.Film
 {

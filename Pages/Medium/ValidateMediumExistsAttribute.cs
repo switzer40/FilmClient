@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FilmClient.Pages.Shared;
+using FilmAPI.Common.Utilities;
 
 namespace FilmClient.Pages.Medium
 {

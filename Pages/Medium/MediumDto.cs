@@ -1,4 +1,5 @@
-﻿using FilmAPI.Common.Interfaces;
+﻿using FilmAPI.Common.DTOs;
+using FilmAPI.Common.Interfaces;
 using FilmAPI.Common.Services;
 using FilmClient.Pages.Shared;
 using System;
@@ -35,7 +36,7 @@ namespace FilmClient.Pages.Medium
         public string Location { get; set; }
         public bool GermanSubtitles { get; set; }
 
-        public override void Copy(BaseDto dto)
+        public override void Copy(IBaseDto dto)
         {
             if (dto.GetType() == typeof(MediumDto))
             {
@@ -44,8 +45,24 @@ namespace FilmClient.Pages.Medium
                 Year = that.Year;
                 MediumType = that.MediumType;
                 GermanSubtitles = that.GermanSubtitles;
-                Key = that.Key;
+                Location = that.Location;                
             }
         }
+
+
+        public override bool Equals(IBaseDto dto)
+        {
+            var result = false;
+            if (dto.GetType() == typeof(MediumDto))
+            {
+                var that = (MediumDto)dto;
+                result = (Title.Equals(that.Title)) &&
+                         (Year.Equals(that.Year)) &&
+                         (MediumType.Equals(that.MediumType)) &&
+                         (Location.Equals(that.Location)) &&
+                         (GermanSubtitles.Equals(that.GermanSubtitles));
+            }
+            return result;
+        }        
     }
 }

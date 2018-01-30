@@ -9,7 +9,8 @@ namespace FilmClient.Pages.Shared
     public abstract class BaseDto : IBaseDto
     {
         
-        public string Key { get; set; }
-        public abstract void Copy(BaseDto dto);
+        public string Key { get; set; }        
+        public abstract void Copy(IBaseDto dto);    
+        public abstract bool Equals(IBaseDto dto);        
     }
 }

@@ -1,4 +1,5 @@
-﻿using FilmClient.Pages.Shared;
+﻿using FilmAPI.Common.Interfaces;
+using FilmClient.Pages.Shared;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -30,7 +31,7 @@ namespace FilmClient.Pages.Person
         public string FullName { get; set; }
         public string ShortBirthdate { get; set; }
 
-        public override void Copy(BaseDto dto)
+        public override void Copy(IBaseDto dto)
         {
             if (dto.GetType() == typeof(PersonDto))
             {
@@ -45,6 +46,19 @@ namespace FilmClient.Pages.Person
                 throw new Exception($"Wrong type: {dto.GetType().Name}");
             }
             
+        }
+
+        public override bool Equals(IBaseDto dto)
+        {
+            var result = false;
+            if (dto.GetType() == typeof(PersonDto))
+            {
+                var that = (PersonDto)dto;
+                result = (FirstMidName.Equals(that.FirstMidName)) &&
+                         (LastName.Equals(that.LastName)) &&
+                         (BirthdateString.Equals(that.BirthdateString));
+            }
+            return result;
         }
     }
 }

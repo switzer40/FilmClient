@@ -1,4 +1,5 @@
-﻿using FilmAPI.Common.Interfaces;
+﻿using FilmAPI.Common.DTOs;
+using FilmAPI.Common.Interfaces;
 using FilmAPI.Common.Services;
 using FilmClient.Pages.Shared;
 using System;
@@ -32,7 +33,7 @@ namespace FilmClient.Pages.Film
         [Range(10, 300)]
         public short Length { get; set; }
 
-        public override void Copy(BaseDto dto)
+        public override void Copy(IBaseDto dto)
         {
             if (dto.GetType() == typeof(FilmDto))
             {
@@ -40,8 +41,22 @@ namespace FilmClient.Pages.Film
                 Title = that.Title;
                 Year = that.Year;
                 Length = that.Length;
-                Key = that.Key;
+                
             }
+        }
+
+
+        public override bool Equals(IBaseDto dto)
+        {
+            var result = false;
+            if (dto.GetType() == typeof(FilmDto))
+            {
+                var that = (FilmDto)dto;
+                result = (Title.Equals(that.Title)) &&
+                         (Year.Equals(that.Year)) &&
+                         (Length.Equals(that.Length));
+            }
+            return result;
         }
     }
 }
