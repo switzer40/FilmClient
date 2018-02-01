@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FilmAPI.Common.DTOs;
 using FilmAPI.Common.Interfaces;
 using FilmAPI.Common.Services;
 using FilmAPI.Common.Utilities;
@@ -27,11 +28,12 @@ namespace FilmClient.Pages.FilmPerson
             {
                 return NotFound();
             }
-            var s = await _service.GetByKeyAsync(key);
-
+            var res = await _service.GetByKeyAsync(key);
+            var s = res.Status;
             if (s == OperationStatus.OK)
             {
-                FilmPersonToDelete = _service.GetByKeyResult(key);
+                var fp = (KeyedFilmPersonDto)res.ResultValue.Single();
+                FilmPersonToDelete = new FilmPersonDto(fp.Title, fp.Year, fp.LastName, fp.Birthdate, fp.Role);
                 return Page();
             }
             else
@@ -46,8 +48,8 @@ namespace FilmClient.Pages.FilmPerson
                 return NotFound();
             }
 
-            var s = await _service.DeleteAsync(key);
-
+            var res = await _service.DeleteAsync(key);
+            var s = res.Status;
             if (s == OperationStatus.OK)
             {
                 return RedirectToPage("./index");

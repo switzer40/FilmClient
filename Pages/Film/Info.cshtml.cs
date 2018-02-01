@@ -68,16 +68,16 @@ namespace FilmClient.Pages.Film
         private async Task<OperationStatus> GetPersonAsync(string lastName, string birthdate)
         {
             var key = _keyService.ConstructPersonKey(lastName, birthdate);
-            var s = await _personService.GetByKeyAsync(key);
-            if (s == OperationStatus.OK)
+            var res = await _personService.GetByKeyAsync(key);
+            if (res.Status == OperationStatus.OK)
             {
-                _contributor =_personService.GetByKeyResult(key);
+                _contributor = (PersonDto)res.ResultValue.Single();
             }
             else
             {
                 _contributor = null;
             }
-            return s;
+            return res.Status;
         }
     }
 }

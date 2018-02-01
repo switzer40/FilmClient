@@ -19,7 +19,7 @@ namespace FilmClient
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseEnvironment("Development")
+                .UseEnvironment("Production")
                 .UseStartup<Startup>()
                 .Build();
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FilmAPI.Common.DTOs;
 using FilmAPI.Common.Interfaces;
 using FilmAPI.Common.Services;
 using FilmAPI.Common.Utilities;
@@ -25,10 +26,12 @@ namespace FilmClient.Pages.Medium
         public MediumDto MediumToEdit { get; set; }
         public async Task<IActionResult> OnGetAsync(string key)
         {
-            var s = await _service.GetByKeyAsync(key);
+            var res = await _service.GetByKeyAsync(key);
+            var s = res.Status;
             if (s == OperationStatus.OK)
             {
-                MediumToEdit = _service.GetByKeyResult(key);
+                var m = (KeyedMediumDto)res.ResultValue.Single();
+                MediumToEdit = new MediumDto(m.Title, m.Year, m.MediumType, m.Location);
                 return Page();
             }
             else
@@ -42,8 +45,8 @@ namespace FilmClient.Pages.Medium
             {
                 return Page();
             }
-            var s = await _service.UpdateAsync(MediumToEdit);
-
+            var res = await _service.UpdateAsync(MediumToEdit);
+            var s = res.Status;
             if (s == OperationStatus.OK)
             {
                 return RedirectToPage("Index");

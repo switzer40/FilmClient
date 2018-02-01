@@ -28,31 +28,29 @@ namespace FilmClient.Pages.Medium
             _route = FilmConstants.MediumUri;
         }
         [ValidateMediumNotDuplicate]
-        public override async Task<OperationStatus> AddAsync(MediumDto dto)
+        public override async Task<OperationResult> AddAsync(MediumDto dto)
         {
-            var result = OperationStatus.OK;
+            var result = new OperationResult(OperationStatus.OK);
             var b = new BaseMediumDto(dto.Title, dto.Year, dto.MediumType, dto.Location);
             var jsonContent = new StringContent(JsonConvert.SerializeObject(b), Encoding.UTF8, "application/json");
             var response = await _client.PostAsync(_route, jsonContent);
-            result = StatusFromResponse(response);
-            if (result == OperationStatus.OK)
+            result = ResultFromResponse(response);
+            KeyedMediumDto addResult;
+            if (result.Status == OperationStatus.OK)
             {
                 var key = _keyService.ConstructMediumKey(dto.Title, dto.Year, dto.MediumType);
                 var response1 = await _client.GetAsync($"{_route}/{key}");
                 var stringResponse = await response1.Content.ReadAsStringAsync();
-                _addResult = JsonConvert.DeserializeObject<MediumDto>(stringResponse);
-                _addResult.Key = _keyService.ConstructMediumKey(dto.Title, dto.Year, dto.MediumType);
+                addResult = JsonConvert.DeserializeObject<KeyedMediumDto>(stringResponse);
+                addResult.Key = _keyService.ConstructMediumKey(dto.Title, dto.Year, dto.MediumType);
             }
             else
             {
-                _addResult = null;
+                addResult = null;
             }
+            result.ResultValue = new List<IKeyedDto>();
+            result.ResultValue.Add(addResult);
             return result;
-        }
-
-        public override MediumDto AddResult()
-        {
-            return _addResult;
         }
 
         public async Task CascadeDeleteForFilmAsync(string title, short year)
@@ -70,17 +68,21 @@ namespace FilmClient.Pages.Medium
                 var s = await DeleteAsync(key);
             }
         }
-
+        
         [ValidateMediumExists]
-        public override async Task<OperationStatus> DeleteAsync(string key)
+        public override async Task<OperationResult> DeleteAsync(string key)
         {
-            var response = await _client.DeleteAsync($"{_route}/{key}");
-            return StatusFromResponse(response);
+            _action = "Delete";
+            var route = ComputeRoute(key);
+            var response = await _client.DeleteAsync(route);
+            return ResultFromResponse(response);
         }
 
         public override async Task<List<MediumDto>> GetAllAsync()
         {
-            var response = await _client.GetAsync(_route);
+            _action = "GetAll";
+            var route = ComputeRoute();
+            var response = await _client.GetAsync(route);
             var stringResponse = await response.Content.ReadAsStringAsync();
             var rawMedia = JsonConvert.DeserializeObject<List<KeyedMediumDto>>(stringResponse);
             var result = new List<MediumDto>();
@@ -93,38 +95,33 @@ namespace FilmClient.Pages.Medium
             return result;
         }
         [ValidateMediumExists]
-        public override async Task<OperationStatus> GetByKeyAsync(string key)
+        public override async Task<OperationResult> GetByKeyAsync(string key)
         {
-            var response = await _client.GetAsync($"{_route}/{key}");
-            var result = StatusFromResponse(response);
-            if (result == OperationStatus.OK)
+            _action = "GetByKey";
+            var route = ComputeRoute(key);
+            var response = await _client.GetAsync(route);
+            var result = ResultFromResponse(response);
+            KeyedMediumDto retVal = null;
+            var list = new List<IKeyedDto>();
+            if (result.Status == OperationStatus.OK)
             {
                 var stringResponse = await response.Content.ReadAsStringAsync();
-                _getResults[key] = JsonConvert.DeserializeObject<MediumDto>(stringResponse);
-                _getResults[key].Key = key;
+                retVal = JsonConvert.DeserializeObject<KeyedMediumDto>(stringResponse);
+                retVal.Key = key;                
+                list.Add(retVal); 
             }
-            else
-            {
-                _getResults[key] = null;
-            }
+            result.ResultValue = list;
             return result;
         }
 
-        public override MediumDto GetByKeyResult(string key)
+        public override async Task<OperationResult> UpdateAsync(MediumDto dto)
         {
-            if (_getResults.ContainsKey(key))
-            {
-                return _getResults[key];
-            }
-            return null;
-        }
-
-        public override async Task<OperationStatus> UpdateAsync(MediumDto dto)
-        {
+            _action = "Edit";
+            var route = ComputeRoute();
             var b = new BaseMediumDto(dto.Title, dto.Year, dto.MediumType, dto.Location);
             var jsonContent = new StringContent(JsonConvert.SerializeObject(b), Encoding.UTF8, "application/json");
-            var response = await _client.PutAsync(_route, jsonContent);
-            return StatusFromResponse(response);
+            var response = await _client.PutAsync(route, jsonContent);
+            return ResultFromResponse(response);
         }
 
         public async Task<bool> HasMediumForFilmAsync(string title, short year)
@@ -137,32 +134,11 @@ namespace FilmClient.Pages.Medium
             var spec = new MediumForTitleAndYear(title, year);
             return (await GetAllAsync()).Where(spec.Predicate).ToList();
         }
-
-        public async Task<OperationStatus> DeleteMediaForFilmAsync(string title, short year)
-        {
-            var mediaToDelete = await MediaForFilmAsync(title, year);
-            return await DeleteMediaRangeAsync(mediaToDelete);
-        }
-
-        public async Task<OperationStatus> DeleteMediaRangeAsync(List<MediumDto> mediaToDelete)
-        {
-            var result = OperationStatus.OK;
-            var media = await GetAllAsync();
-            foreach (var m in mediaToDelete)
-            {
-                var s = await DeleteAsync(m.Key);
-                if (s != OperationStatus.OK)
-                {
-                    result = s;
-                    break;
-                }
-            }
-            return result;
-        }
-
+        
         public override async Task<int> CountAsync()
         {
-            return (await GetAllAsync()).Count();
+            var media = await GetAllAsync();
+            return media.Count();
         }
 
         public override string KeyFrom(MediumDto dto)

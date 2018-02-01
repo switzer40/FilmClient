@@ -10,36 +10,29 @@ namespace FilmClient.Pages.Shared
 {
     public abstract class BaseMockService<T> : IService<T> where T : BaseDto
     {
-        protected Dictionary<string, T> _store;
-        protected T _addResult;
-        protected Dictionary<string, T> _getResults;
+        protected Dictionary<string, T> _store;        
         protected IKeyService _keyService;
         public BaseMockService()
         {
-            _store = new Dictionary<string, T>();
-            _addResult = null;
-            _getResults = new Dictionary<string, T>();
+            _store = new Dictionary<string, T>();            
             _keyService = new KeyService();
         }
-        public OperationStatus Add(T t)
+        public OperationResult Add(T t)
         {;
             var key = KeyFrom(t);
             _store[key] = t;
-            _addResult = t;
-            return OperationStatus.OK;
+            OperationResult result = new OperationResult();
+            result.ResultValue.Add(RetrieveKeyedDtoFrom(t));
+            return result;
         }
 
-        public async Task<OperationStatus> AddAsync(T dto)
+        protected abstract IKeyedDto RetrieveKeyedDtoFrom(T t);
+        
+        public async Task<OperationResult> AddAsync(T dto)
         {
             return await Task.Run(() => Add(dto));
         }
-        
-
-        public T AddResult()
-        {
-            return _addResult;
-        }
-
+       
         public int Count()
         {
             return GetAll().Count;
@@ -50,13 +43,13 @@ namespace FilmClient.Pages.Shared
             return await Task.Run(() => Count());
         }
 
-        public OperationStatus Delete(string key)
+        public OperationResult Delete(string key)
         {
             _store.Remove(key);
-            return OperationStatus.OK;
+            return new OperationResult();
         }
 
-        public async Task<OperationStatus> DeleteAsync(string key)
+        public async Task<OperationResult> DeleteAsync(string key)
         {
             return await Task.Run(() => Delete(key));
         }
@@ -71,60 +64,58 @@ namespace FilmClient.Pages.Shared
             return await Task.Run(() => GetAll());
         }
 
-        public OperationStatus GetByKey(string key)
+        public OperationResult GetByKey(string key)
         {
-                if (_store.ContainsKey(key))
-                {
-                    _getResults[key] = _store[key];
-                    return OperationStatus.OK;
-                }
-                else
-                {
-                    _getResults[key] = null;
-                    var result = OperationStatus.NotFound;
-                    result.ReasonForFailure = "Unknown entity";
-                    return result;
-                }
+            var status = OperationStatus.OK;
+            var retVal = new List<IKeyedDto>();
+            if (_store.ContainsKey(key))
+            {                
+                retVal.Add((IKeyedDto)_store[key]);
+            }
+            else
+            {
+                status = OperationStatus.NotFound;
+                status.ReasonForFailure = "Unknown entity";
+            }
+            return new OperationResult(status, retVal);
+                
         }
 
-        public async Task<OperationStatus> GetByKeyAsync(string key)
+        public async Task<OperationResult> GetByKeyAsync(string key)
         {
                 return await Task.Run(() => GetByKey(key));
-        }
-
-        public T GetByKeyResult(string key)
-        {
-                return _getResults[key];
         }
 
         public abstract string KeyFrom(T dto);
         
 
-        public OperationStatus Update(T dto)
+        public OperationResult Update(T dto)
         {
-            var key = dto.Key;
-            if (string.IsNullOrEmpty(key))
+            var key = dto.Key;           
+            var status = OperationStatus.OK;
+            var val = new List<IKeyedDto>();
+             if (string.IsNullOrEmpty(key))
             {
-                var result = OperationStatus.BadRequest;
-                result.ReasonForFailure = "Malformed key";
-                return result;
+                status = OperationStatus.BadRequest;
+                status.ReasonForFailure = "Malformed key";
+                val = null;
             }
             if (_store.ContainsKey(key))
             {
                 var storedEntity = _store[key];
-                storedEntity.Copy(dto);
-                return OperationStatus.OK;
+                storedEntity.Copy(dto);                
+                val.Add((IKeyedDto)storedEntity);                
             }
             else
             {
-                var result = OperationStatus.NotFound;
-                result.ReasonForFailure = "Unknown Entity";
-                return result;
+                status = OperationStatus.NotFound;
+                status.ReasonForFailure = "Unknown Entity";
+                val = null;
             }
-
+            return new OperationResult(status, val);
         }
 
-        public async Task<OperationStatus> UpdateAsync(T dto)
+        public async Task<OperationResult> UpdateAsync(T dto)
         {
             return await Task.Run(() => Update(dto));
         }

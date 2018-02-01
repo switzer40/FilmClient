@@ -31,7 +31,8 @@ namespace FilmClient.Pages.Medium
                 {
                     var dto = (MediumDto)context.ActionArguments["dto"];
                     var key = _keyService.ConstructMediumKey(dto.Title, dto.Year, dto.MediumType);
-                    var s = await _service.GetByKeyAsync(key);
+                    var res = await _service.GetByKeyAsync(key);
+                    var s = res.Status;
                     if (s == OperationStatus.OK)
                     {
                         context.Result = new BadRequestObjectResult($"A Medium with key {key} already exists");

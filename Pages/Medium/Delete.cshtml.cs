@@ -8,6 +8,7 @@ using FilmAPI.Common.Interfaces;
 using FilmAPI.Common.Services;
 using FilmClient.Pages.Shared;
 using FilmAPI.Common.Utilities;
+using FilmAPI.Common.DTOs;
 
 namespace FilmClient.Pages.Medium
 {
@@ -27,10 +28,14 @@ namespace FilmClient.Pages.Medium
         public async Task<IActionResult> OnGetAsync(string key)
         {
             var lookupKey = (string.IsNullOrEmpty(key)) ? MediumToDelete.Key : key;
-            var s = await _service.GetByKeyAsync(lookupKey);
+            var res = await _service.GetByKeyAsync(lookupKey);
+            var s = res.Status;
             if (s == OperationStatus.OK)
             {
-                MediumToDelete = _service.GetByKeyResult(lookupKey);
+                var m = (KeyedMediumDto)res.ResultValue.Single();
+                MediumToDelete.Title = m.Title;
+                MediumToDelete.Year = m.Year;
+                MediumToDelete.MediumType = m.MediumType;
                 return Page();
             }
             else
@@ -41,7 +46,8 @@ namespace FilmClient.Pages.Medium
         }
         public async Task<IActionResult> OnPostAsync(string key)
         {
-            var s = await _service.DeleteAsync(key);
+            var res = await _service.DeleteAsync(key);
+            var s = res.Status;
             if (s == OperationStatus.OK)
             {
                 return RedirectToPage("./index");

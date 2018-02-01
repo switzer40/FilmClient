@@ -30,7 +30,8 @@ namespace FilmClient.Pages.Medium
                 if (context.ActionArguments.ContainsKey("key"))
                 {
                     var key = (string)context.ActionArguments["key"];
-                    var s = await _service.GetByKeyAsync(key);
+                    var res = await _service.GetByKeyAsync(key);
+                    var s = res.Status;
                     if (s == OperationStatus.BadRequest)
                     {
                         context.Result = new BadRequestObjectResult($"The key {key} is malformed");

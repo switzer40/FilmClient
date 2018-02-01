@@ -34,8 +34,8 @@ namespace FilmClient.Pages.Medium
             {
                 return Page();
             }
-            var s = await _service.AddAsync(MediumToAdd);
-
+            var res = await _service.AddAsync(MediumToAdd);
+            var s = res.Status;
             if (s == OperationStatus.OK)
             {
                 return RedirectToPage("./Index");

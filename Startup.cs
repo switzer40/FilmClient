@@ -28,8 +28,7 @@ namespace FilmClient
         public IConfiguration Configuration { get; }
        
         public IServiceProvider ConfigureDevelopmentServices(IServiceCollection services)
-        {
-            services.AddMvc();
+        {            
             services.AddSingleton<IFilmService, FilmMockService>();
             services.AddSingleton<IPersonService, PersonMockService>();
             services.AddSingleton<IMediumService, MediumMockService>();
@@ -37,8 +36,7 @@ namespace FilmClient
            return ConfigureServices(services);
         }
         public IServiceProvider ConfigureProductionServices(IServiceCollection services)
-        {
-            services.AddMvc();
+        {            
             services.AddScoped<IFilmService, FilmAPIService>();
             services.AddScoped<IPersonService, PersonAPIService>();
             services.AddScoped<IMediumService, MediumAPIService>();
@@ -47,6 +45,7 @@ namespace FilmClient
         }
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc();
             return ConfigureIocServices(services);       
         }
 
@@ -93,12 +92,7 @@ namespace FilmClient
 
             app.UseStaticFiles();
 
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller}/{action=Index}/{id?}");
-            });
+            app.UseMvc();
         }
     }
 }

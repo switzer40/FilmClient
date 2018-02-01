@@ -10,6 +10,7 @@ using FilmClient.Pages.Medium;
 using FilmClient.Pages.FilmPerson;
 using FilmAPI.Common.Services;
 using FilmAPI.Common.Utilities;
+using FilmAPI.Common.DTOs;
 
 namespace FilmClient.Pages.Film
 {
@@ -40,12 +41,14 @@ namespace FilmClient.Pages.Film
                 return NotFound();
             }
 
-            var s = await _service.GetByKeyAsync(key);
-
+            var res = await _service.GetByKeyAsync(key);
+            var s = res.Status;
             if (s == OperationStatus.OK)
             {
-                FilmToDelete = _service.GetByKeyResult(key);
-                               
+                var f = (KeyedFilmDto)res.ResultValue.Single();
+                FilmToDelete.Title = f.Title;
+                FilmToDelete.Year = f.Year;
+                FilmToDelete.Length = f.Length;
                 return Page();
             }
             else
@@ -61,8 +64,8 @@ namespace FilmClient.Pages.Film
                 return NotFound();
             }
 
-            var s = await _service.DeleteAsync(key);
-
+            var res = await _service.DeleteAsync(key);
+            var s = res.Status;
             if (s == OperationStatus.OK)
             {
                 return RedirectToPage("./index");

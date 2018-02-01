@@ -8,20 +8,19 @@ namespace FilmClient.Pages.Shared
 {
     public interface IService<T> where T : BaseDto
     {
-        Task<OperationStatus> AddAsync(T dto);
-        T AddResult();
+        Task<OperationResult> AddAsync(T dto);
+        
         Task<int> CountAsync();
-        Task<OperationStatus> DeleteAsync(string key);
+        Task<OperationResult> DeleteAsync(string key);
         string KeyFrom(T dto);
         Task<List<T>> GetAllAsync();
-        T GetByKeyResult(string key);
-        Task<OperationStatus> GetByKeyAsync(string key);
-        Task<OperationStatus> UpdateAsync(T dto);
-        OperationStatus Add(T t);
+        OperationResult GetByKey(string key);
+        Task<OperationResult> GetByKeyAsync(string key);
+        Task<OperationResult> UpdateAsync(T dto);
+        OperationResult Add(T t);
         int Count();
-        OperationStatus Delete(string key);
-        List<T> GetAll();
-        OperationStatus GetByKey(string key);
-        OperationStatus Update(T dto);
+        OperationResult Delete(string key);
+        List<T> GetAll();        
+        OperationResult Update(T dto);
     }
 }

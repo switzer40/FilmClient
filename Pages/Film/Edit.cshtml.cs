@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FilmAPI.Common.DTOs;
 using FilmAPI.Common.Services;
 using FilmAPI.Common.Utilities;
 using FilmClient.Pages.Shared;
@@ -25,10 +26,14 @@ namespace FilmClient.Pages.Film
         public FilmDto FilmToEdit { get; set; }
         public async Task<IActionResult> OnGetAsync(string key)
         {
-            var s = await _service.GetByKeyAsync(key);
+            var res = await _service.GetByKeyAsync(key);
+            var s = res.Status;
             if (s == OperationStatus.OK)
             {
-                FilmToEdit = _service.GetByKeyResult(key);
+                var f = (KeyedFilmDto) res.ResultValue.Single();
+                FilmToEdit.Title = f.Title;
+                FilmToEdit.Year = f.Year;
+                FilmToEdit.Length = f.Length;
                 return Page();
             }
             else
@@ -42,15 +47,15 @@ namespace FilmClient.Pages.Film
             {
                 return Page();
             }
-            var s = await _service.UpdateAsync(FilmToEdit);
+            var res = await _service.UpdateAsync(FilmToEdit);
             
-            if (s == OperationStatus.OK)
+            if (res.Status == OperationStatus.OK)
             {
                 return RedirectToPage("Index");
             }
             else
             {
-                return HandleError(s, _action);
+                return HandleError(res.Status, _action);
             }            
         }
     }

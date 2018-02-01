@@ -14,8 +14,8 @@ namespace FilmClient.Pages.Shared
     {
         protected HttpClient _client;
         protected string _route;
-        protected T _addResult;
-        protected Dictionary<string, T> _getResults;
+        protected string _controller;
+        protected string _action;        
         protected IKeyService _keyService;
         protected IErrorService _errorService;
         public BaseService(IErrorService eservice)
@@ -33,20 +33,19 @@ namespace FilmClient.Pages.Shared
             return client;
         }
 
-        public OperationStatus Add(T t)
+        protected string ComputeRoute(string arg = "")
+        {
+            var result = (string.IsNullOrEmpty(arg)) ? $"/api/{_controller}/{_action}" : $"/api/{_controller}/{_action}/{arg}";
+            return result;
+        }
+        public OperationResult Add(T t)
         {
             // Not needed
-            return OperationStatus.OK;
+            return new OperationResult(OperationStatus.OK);
         }
 
-        public abstract Task<OperationStatus> AddAsync(T dto);
-        
-
-        public virtual T AddResult()
-        {
-            return _addResult;
-        }
-
+        public abstract Task<OperationResult> AddAsync(T dto);
+   
         public int Count()
         {
             // Not need
@@ -56,13 +55,13 @@ namespace FilmClient.Pages.Shared
         public abstract Task<int> CountAsync();
         
 
-        public OperationStatus Delete(string key)
+        public OperationResult Delete(string key)
         {
             // Not needed
-            return OperationStatus.OK;
+            return new OperationResult(OperationStatus.OK);
         }
 
-        public abstract Task<OperationStatus> DeleteAsync(string key);
+        public abstract Task<OperationResult> DeleteAsync(string key);
         
 
         public List<T> GetAll()
@@ -74,53 +73,40 @@ namespace FilmClient.Pages.Shared
         public abstract Task<List<T>> GetAllAsync();
         
 
-        public OperationStatus GetByKey(string key)
+        public OperationResult GetByKey(string key)
         {
             // Not need
-            return OperationStatus.OK;
+            return new OperationResult(OperationStatus.OK);
         }
 
-        public abstract Task<OperationStatus> GetByKeyAsync(string key);
-
-
-        public virtual T GetByKeyResult(string key)
-        {
-            if (_getResults.ContainsKey(key))
-            {
-                return _getResults[key];
-            }
-            else
-            {
-                return null;
-            }
-        }
+        public abstract Task<OperationResult> GetByKeyAsync(string key);
 
         public abstract string KeyFrom(T dto);
         
 
-        public OperationStatus Update(T dto)
+        public OperationResult Update(T dto)
         {
             // Not needed
-            return OperationStatus.OK;
+            return new OperationResult(OperationStatus.OK);
         }
 
-        public abstract Task<OperationStatus> UpdateAsync(T dto);
-        protected OperationStatus StatusFromResponse(HttpResponseMessage response)
+        public abstract Task<OperationResult> UpdateAsync(T dto);
+        protected OperationResult ResultFromResponse(HttpResponseMessage response)
         {
-            var result = OperationStatus.OK;
+            OperationResult result = new OperationResult(OperationStatus.OK);
             switch (response.StatusCode)
             {
                 case HttpStatusCode.BadRequest:
-                    result = OperationStatus.BadRequest;
+                    result = new OperationResult(OperationStatus.BadRequest);
                     break;
                 case HttpStatusCode.NotFound:
-                    result = OperationStatus.NotFound;
+                    result = new OperationResult(OperationStatus.NotFound);
                     break;
                 case HttpStatusCode.OK:
-                    result = OperationStatus.OK;
+                    result = new OperationResult(OperationStatus.OK);
                     break;
                 case HttpStatusCode.InternalServerError:
-                    result = OperationStatus.ServerError;
+                    result = new OperationResult(OperationStatus.ServerError);
                     break;
                 default:
                     throw new Exception("Unexpected status code");

@@ -31,8 +31,8 @@ namespace FilmClient.Pages.Person
                 return Page();
             }
 
-            var s = await _service.AddAsync(PersonToAdd);
-
+            var res = await _service.AddAsync(PersonToAdd);
+            var s = res.Status;
             if (s != OperationStatus.OK)
             {
                 return HandleError(s, _action);

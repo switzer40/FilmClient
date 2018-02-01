@@ -42,8 +42,8 @@ namespace FilmClient.Pages.Film
                 return Page();
             }
 
-            var s = await _service.AddAsync(FilmToAdd);
-
+            var res = await _service.AddAsync(FilmToAdd);
+            var s = res.Status;
             if (s != OperationStatus.OK)
             {
                 return HandleError(s, _action);

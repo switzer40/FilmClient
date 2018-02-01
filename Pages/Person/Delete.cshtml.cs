@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FilmAPI.Common.DTOs;
 using FilmAPI.Common.Interfaces;
 using FilmAPI.Common.Services;
 using FilmAPI.Common.Utilities;
@@ -30,10 +31,12 @@ namespace FilmClient.Pages.Person
         public bool DoDeleteRelations { get; set; }
         public async Task<IActionResult> OnGetAsync(string key)
         {
-            var s = await _service.GetByKeyAsync(key);
+            var res = await _service.GetByKeyAsync(key);
+            var s = res.Status;
             if (s == OperationStatus.OK)
             {
-                PersonToDelete = _service.GetByKeyResult(key);
+                var p = (KeyedPersonDto)res.ResultValue.Single();
+                PersonToDelete = new PersonDto(p.LastName, p.Birthdate, p.FirstMidName);
                 var data = _keyService.DeconstructPersonKey(key);                
                 return Page();
             }
@@ -45,7 +48,8 @@ namespace FilmClient.Pages.Person
         public async Task<IActionResult> OnPostAsync(string key)
         {
            
-            var s = await _service.DeleteAsync(key);
+            var res = await _service.DeleteAsync(key);
+            var s = res.Status;
             if (s== OperationStatus.OK)
             {
                 return RedirectToPage("../Index");

@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using FilmAPI.Common.Services;
 using FilmClient.Pages.Shared;
 using FilmAPI.Common.Utilities;
+using FilmAPI.Common.DTOs;
+using System.Linq;
 
 namespace FilmClient.Pages.Person
 {
@@ -25,11 +27,12 @@ namespace FilmClient.Pages.Person
             {
                 return new BadRequestObjectResult("key may not be null");
             }
-            var s = await _service.GetByKeyAsync(key);
-            
+            var res = await _service.GetByKeyAsync(key);
+            var s = res.Status;
             if (s == OperationStatus.OK)
             {
-                PersonToEdit = _service.GetByKeyResult(key);
+                var p = (KeyedPersonDto)res.ResultValue.Single();
+                PersonToEdit = new PersonDto(p.LastName, p.Birthdate, p.FirstMidName);
                 return Page();
             }
             else
@@ -39,7 +42,8 @@ namespace FilmClient.Pages.Person
         }
         public async Task<IActionResult> OnPostAsync()
         {
-            var s = await _service.UpdateAsync(PersonToEdit);
+            var res = await _service.UpdateAsync(PersonToEdit);
+            var s = res.Status;
             if (s == OperationStatus.OK)
             {
                 return RedirectToPage("./Index");

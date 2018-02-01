@@ -1,4 +1,6 @@
-﻿using FilmClient.Pages.Shared;
+﻿using FilmAPI.Common.DTOs;
+using FilmAPI.Common.Interfaces;
+using FilmClient.Pages.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +13,12 @@ namespace FilmClient.Pages.Film
         public override string KeyFrom(FilmDto dto)
         {
             return _keyService.ConstructFilmKey(dto.Title, dto.Year);
+        }
+
+        protected override IKeyedDto RetrieveKeyedDtoFrom(FilmDto t)
+        {
+            var key = KeyFrom(t);
+            return new KeyedFilmDto(t.Title, t.Year, t.Length, key);
         }
     }
 }

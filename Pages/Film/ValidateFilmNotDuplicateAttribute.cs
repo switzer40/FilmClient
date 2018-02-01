@@ -34,7 +34,8 @@ namespace FilmClient.Pages.Film
                 {
                     var dto = (FilmDto)context.ActionArguments["dto"];
                     var key = _keyService.ConstructFilmKey(dto.Title, dto.Year);
-                    var s = await _service.GetByKeyAsync(key);
+                    var res = await _service.GetByKeyAsync(key);
+                    var s = res.Status;
                     if (s == OperationStatus.OK)
                     {
                         context.Result = new BadRequestObjectResult($"A film {dto.Title}({dto.Year}) exists already.");

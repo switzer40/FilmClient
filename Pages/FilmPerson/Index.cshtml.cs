@@ -9,6 +9,7 @@ using FilmAPI.Common.Services;
 using FilmClient.Pages.Person;
 using FilmClient.Pages.Shared;
 using FilmAPI.Common.Utilities;
+using FilmAPI.Common.DTOs;
 
 namespace FilmClient.Pages.FilmPerson
 {
@@ -52,9 +53,17 @@ namespace FilmClient.Pages.FilmPerson
 
         private async Task<PersonDto> GetPersonAsync(string lastName, string birthdate)
         {
+            PersonDto result = null;
             var key = _keyService.ConstructPersonKey(lastName, birthdate);
-            var s = await _personService.GetByKeyAsync(key);
-            return (s == OperationStatus.OK) ? _personService.GetByKeyResult(key) : null;
+            var res = await _personService.GetByKeyAsync(key);
+            var s = res.Status;
+
+            if (s == OperationStatus.OK)
+            {
+                var p = (KeyedPersonDto) res.ResultValue.Single();
+                result = new PersonDto(p.LastName, p.Birthdate, p.FirstMidName);
+            }
+            return result;
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FilmAPI.Common.Constants;
+using FilmAPI.Common.DTOs;
 using FilmAPI.Common.Interfaces;
 using FilmAPI.Common.Services;
 using FilmAPI.Common.Utilities;
@@ -56,10 +57,12 @@ namespace FilmClient.Pages.Person
 
         private async Task<PersonDto> GetPersonAsync(string key)
         {
-            var s = await _personService.GetByKeyAsync(key);
+            var res = await _personService.GetByKeyAsync(key);
+            var s = res.Status;
             if (s == OperationStatus.OK)
             {
-                return _personService.GetByKeyResult(key);
+                var p = (KeyedPersonDto)res.ResultValue.Single();
+                return new PersonDto(p.LastName, p.Birthdate, p.FirstMidName);
             }
             else
             {
