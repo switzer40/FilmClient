@@ -2,6 +2,8 @@
 using FilmAPI.Common.Interfaces;
 using FilmAPI.Common.Services;
 using FilmAPI.Common.Utilities;
+using FilmClient.Pages.Film;
+using FilmClient.Pages.Person;
 using FilmClient.Pages.Shared;
 using Newtonsoft.Json;
 using System;
@@ -16,8 +18,16 @@ namespace FilmClient.Pages.FilmPerson
 {
     public class FilmPersonAPIService : BaseService<FilmPersonDto>, IFilmPersonService
     {
-        public FilmPersonAPIService(IErrorService eservice) : base(eservice)
+        private readonly IFilmService _filmService;
+        private readonly IPersonService _personService;
+        public FilmPersonAPIService(IFilmService fService,
+                                    IPersonService pservice,
+                                    IErrorService eservice) : base(eservice)
         {
+            _filmService = fService;
+            _personService = pservice;
+            _keyService = new KeyService();
+            _controller = "FilmPerson";
         }
         public override async Task<OperationResult> AddAsync(FilmPersonDto dto)
         {
@@ -49,7 +59,26 @@ namespace FilmClient.Pages.FilmPerson
             var result = new List<FilmPersonDto>();
             var response = await _client.GetAsync(route);
             var stringResponse = await response.Content.ReadAsStringAsync();
-            result = JsonConvert.DeserializeObject<List<FilmPersonDto>>(stringResponse);
+            var rawFilmPeople = JsonConvert.DeserializeObject<List<KeyedFilmPersonDto>>(stringResponse);
+            foreach (var fp in rawFilmPeople)
+            {
+                var fKey = _keyService.ConstructFilmKey(fp.Title, fp.Year);
+                var f = _filmService.GetByKey(fKey);
+                if (f == null)
+                {
+                    // if this happens,
+                    // the server is broken
+                }
+                var pKey = _keyService.ConstructPersonKey(fp.LastName, fp.Birthdate);
+                var p = _personService.GetByKey(pKey);
+                if (p == null)
+                {
+                    // if this happens,
+                    // the server is broken
+                }
+                var dto = new FilmPersonDto(fp.Title, fp.Year, fp.LastName, fp.Birthdate, fp.Role);
+                result.Add(dto);
+            }
             return result;
         }
 

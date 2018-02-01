@@ -91,9 +91,8 @@ namespace FilmClient.Pages.Person
             var retVal = new List<IKeyedDto>();
             if (s == OperationStatus.OK)
             {
-                var stringResponse = await response.Content.ReadAsStringAsync();
-                var p = JsonConvert.DeserializeObject<KeyedPersonDto>(stringResponse);                
-                retVal.Add(p);                
+                var dto = (KeyedPersonDto)res.ResultValue.Single();                
+                retVal.Add(dto);                
             }
             else
             {

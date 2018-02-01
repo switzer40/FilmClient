@@ -24,8 +24,8 @@ namespace FilmClient.Pages.Medium
         public MediumAPIService(IFilmService fservice, IErrorService eservice) : base(eservice)
         {
             _filmService = fservice;
-            
-            _route = FilmConstants.MediumUri;
+            _keyService = new KeyService();
+            _controller = "Medium";            
         }
         [ValidateMediumNotDuplicate]
         public override async Task<OperationResult> AddAsync(MediumDto dto)
