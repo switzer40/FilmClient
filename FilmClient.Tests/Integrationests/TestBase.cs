@@ -15,7 +15,7 @@ namespace FilmClient.Tests.Integrationests
             _route = $"http://localhost:5000/api";
             _keyService = new KeyService();
         }
-        protected static HttpClient _client = GetClient();
+        protected static HttpClient _client = new HttpClient();
         protected string _route;
         protected string _controller;
         protected string _action;
