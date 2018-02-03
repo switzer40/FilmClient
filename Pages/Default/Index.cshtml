@@ -1,0 +1,29 @@
+﻿@page
+@model FilmClient.Pages.Default.IndexModel
+@{
+    ViewData["Title"] = "Current Default Values";
+}
+
+<h2>@ViewData["Title"]</h2>
+<hr />
+<dl class="dl-horizontal">
+    <dt>
+        @Html.DisplayNameFor(model => model.CurrentDefaultValues.MediumType)
+    </dt>
+    <dd>
+        @Html.DisplayFor(model => model.CurrentDefaultValues.MediumType)
+    </dd>
+    <dt>
+        @Html.DisplayNameFor(model => model.CurrentDefaultValues.Location)
+    </dt>
+    <dd>
+        @Html.DisplayFor(model => model.CurrentDefaultValues.Location)
+    </dd>
+    <dt>
+        @Html.DisplayNameFor(model => model.CurrentDefaultValues.Role)
+    </dt>
+    <dd>
+        @Html.DisplayFor(model => model.CurrentDefaultValues.Role)
+    </dd>
+</dl>
+<a asp-page="./Edit">Edit the default values</a>

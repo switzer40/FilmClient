@@ -16,10 +16,8 @@ namespace FilmClient.Tests.Integrationests.FilmController
         public async Task CountReturnsTwo()
         {
             // Arrange
-            
-            _controller = "Film";
-            _action = "Count";
-            var route = $"{_route}/{_controller}/{_action}";
+
+            var route = BuildRoute("Film", "Count");
             // Act
             var response = await _client.GetAsync(route);
             var stringResponse = await response.Content.ReadAsStringAsync();
@@ -31,10 +29,8 @@ namespace FilmClient.Tests.Integrationests.FilmController
         [Fact]
         public async Task GetAllReturnsTiffanyAndPretty()
         {
-            // Arrange
-            _controller = "Film";
-            _action = "GetAll";
-            var route = $"{_route}/{_controller}/{_action}";
+            // Arrange            
+            var route = BuildRoute("Film", "GetAll");
 
             // Act
             var response = await _client.GetAsync(route);
@@ -44,7 +40,6 @@ namespace FilmClient.Tests.Integrationests.FilmController
             // Assert
             Assert.Contains(result, f => f.Title.Contains("Tiffany"));
             Assert.Contains(result, f => f.Title.Contains("Pretty"));
-
         }
         [Fact]
         public async Task GetByKeyReturnsPrettyGivenValidKey()

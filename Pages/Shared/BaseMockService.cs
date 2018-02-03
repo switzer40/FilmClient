@@ -70,7 +70,7 @@ namespace FilmClient.Pages.Shared
             var retVal = new List<IKeyedDto>();
             if (_store.ContainsKey(key))
             {                
-                retVal.Add((IKeyedDto)_store[key]);
+                retVal.Add(RetrieveKeyedDtoFrom(_store[key]));
             }
             else
             {
@@ -80,7 +80,7 @@ namespace FilmClient.Pages.Shared
             return new OperationResult(status, retVal);
                 
         }
-
+        
         public async Task<OperationResult> GetByKeyAsync(string key)
         {
                 return await Task.Run(() => GetByKey(key));

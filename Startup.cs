@@ -15,6 +15,7 @@ using FilmClient.Pages.Shared;
 using Microsoft.Extensions.Logging;
 using StructureMap;
 using FilmAPI.Common.Services;
+using FilmClient.Pages.Default;
 
 namespace FilmClient
 {
@@ -45,6 +46,7 @@ namespace FilmClient
         }
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IDefaultService, DefaultService>();
             services.AddMvc();
             return ConfigureIocServices(services);       
         }

@@ -17,12 +17,15 @@ namespace FilmClient.Pages.Film
     public class InfoModel : BasePageModel
     {
         private readonly IPersonService _personService;
+        private readonly IPersonMapper _personMapper;
         private readonly IFilmPersonService _filmPersonService;        
         public InfoModel(IPersonService pservice,
+                         IPersonMapper pMapper,
                          IFilmPersonService fpservice,
                          IErrorService eservice) : base(eservice)
         {
             _personService = pservice;
+            _personMapper = pMapper;
             _filmPersonService = fpservice;
             _keyService = new KeyService();
         }
@@ -71,7 +74,7 @@ namespace FilmClient.Pages.Film
             var res = await _personService.GetByKeyAsync(key);
             if (res.Status == OperationStatus.OK)
             {
-                _contributor = (PersonDto)res.ResultValue.Single();
+                _contributor = (PersonDto)_personMapper.Mapback(res.ResultValue.Single());
             }
             else
             {
