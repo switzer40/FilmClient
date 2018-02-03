@@ -15,10 +15,15 @@ namespace FilmClient.Pages.Default
             _service = service;
         }
         [BindProperty]
-        public DefaultDto DefautValuesToEdit { get; set; }
+        public DefaultDto DefaultValuesToEdit { get; set; }
         public void OnGet()
         {
-            DefautValuesToEdit = _service.GetCurrentDefaultValues();
+            DefaultValuesToEdit = _service.GetCurrentDefaultValues();
+        }
+        public void OnPost(string key)
+        {
+            var key1 = DefaultDto.ConstructKey(DefaultValuesToEdit);
+            _service.UpdateDefaultValues(key1);
         }
     }
 }

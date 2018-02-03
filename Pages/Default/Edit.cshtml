@@ -23,6 +23,10 @@
     var bd3 = FilmConstants.Location_BD3;
     var bd4 = FilmConstants.Location_BD4;
     var shelf1 = FilmConstants.Location_Shelf1;
+    var actor = FilmConstants.Role_Actor;
+    var composer = FilmConstants.Role_Composer;
+    var director = FilmConstants.Role_Director;
+    var writer = FilmConstants.Role_Writer;
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -34,99 +38,118 @@
         <form method="post">
             <label>Medium Type</label>
             <div class="form-group">
-                <label asp-for="DefautValuesToEdit.MediumType" class="radio-inline">
-                    <input type="radio" asp-for="DefautValuesToEdit.MediumType" value=@dvd>
+                <label asp-for="DefaultValuesToEdit.MediumType" class="radio-inline">
+                    <input type="radio" asp-for="DefaultValuesToEdit.MediumType" value=@dvd>
                     @dvd
                 </label>
-                <label asp-for="DefautValuesToEdit.MediumType" class="radio-inline">
-                    <input type="radio" asp-for="DefautValuesToEdit.MediumType" value=@bd>
+                <label asp-for="DefaultValuesToEdit.MediumType" class="radio-inline">
+                    <input type="radio" asp-for="DefaultValuesToEdit.MediumType" value=@bd>
                     @bd
                 </label>
             </div>
             <label>Location</label>
             <div class=" form-group">
-                <label asp-for="DefautValuesToEdit.Location" class="radio-inline">
-                    <input type="radio" asp-for="DefautValuesToEdit.Location" value=@left>
+                <label asp-for="DefaultValuesToEdit.Location" class="radio-inline">
+                    <input type="radio" asp-for="DefaultValuesToEdit.Location" value=@left>
                     @left
                 </label>
-                <label asp-for="DefautValuesToEdit.Location" class="radio-inline">
-                    <input type="radio" asp-for="DefautValuesToEdit.Location" value=@left1>
+                <label asp-for="DefaultValuesToEdit.Location" class="radio-inline">
+                    <input type="radio" asp-for="DefaultValuesToEdit.Location" value=@left1>
                     @left1
                 </label>
-                <label asp-for="DefautValuesToEdit.Location" class="radio-inline">
-                    <input type="radio" asp-for="DefautValuesToEdit.Location" value=@left2>
+                <label asp-for="DefaultValuesToEdit.Location" class="radio-inline">
+                    <input type="radio" asp-for="DefaultValuesToEdit.Location" value=@left2>
                     @left2
                 </label>
-                <label asp-for="DefautValuesToEdit.Location" class="radio-inline">
-                    <input type="radio" asp-for="DefautValuesToEdit.Location" value=@left3>
+                <label asp-for="DefaultValuesToEdit.Location" class="radio-inline">
+                    <input type="radio" asp-for="DefaultValuesToEdit.Location" value=@left3>
                     @left3
                 </label>
-                <label asp-for="DefautValuesToEdit.Location" class="radio-inline">
-                    <input type="radio" asp-for="DefautValuesToEdit.Location" value=@left4>
+                <label asp-for="DefaultValuesToEdit.Location" class="radio-inline">
+                    <input type="radio" asp-for="DefaultValuesToEdit.Location" value=@left4>
                     @left4
                 </label>
             </div>
             <div class=" form-group">
-                <label asp-for="DefautValuesToEdit.Location" class="radio-inline">
-                    <input type="radio" asp-for="DefautValuesToEdit.Location" value=@right>
+                <label asp-for="DefaultValuesToEdit.Location" class="radio-inline">
+                    <input type="radio" asp-for="DefaultValuesToEdit.Location" value=@right>
                     @right
                 </label>
-                <label asp-for="DefautValuesToEdit.Location" class="radio-inline">
-                    <input type="radio" asp-for="DefautValuesToEdit.Location" value=@right1>
+                <label asp-for="DefaultValuesToEdit.Location" class="radio-inline">
+                    <input type="radio" asp-for="DefaultValuesToEdit.Location" value=@right1>
                     @right1
                 </label>
-                <label asp-for="DefautValuesToEdit.Location" class="radio-inline">
-                    <input type="radio" asp-for="DefautValuesToEdit.Location" value=@right2>
+                <label asp-for="DefaultValuesToEdit.Location" class="radio-inline">
+                    <input type="radio" asp-for="DefaultValuesToEdit.Location" value=@right2>
                     @right2
                 </label>
-                <label asp-for="DefautValuesToEdit.Location" class="radio-inline">
-                    <input type="radio" asp-for="DefautValuesToEdit.Location" value=@right3>
+                <label asp-for="DefaultValuesToEdit.Location" class="radio-inline">
+                    <input type="radio" asp-for="DefaultValuesToEdit.Location" value=@right3>
                     @right3
                 </label>
-                <label asp-for="DefautValuesToEdit.Location" class="radio-inline">
-                    <input type="radio" asp-for="DefautValuesToEdit.Location" value=@right4>
+                <label asp-for="DefaultValuesToEdit.Location" class="radio-inline">
+                    <input type="radio" asp-for="DefaultValuesToEdit.Location" value=@right4>
                     @right4
                 </label>
             </div>
             <div class=" form-group">
-                <label asp-for="DefautValuesToEdit.Location" class="radio-inline">
-                    <input type="radio" asp-for="DefautValuesToEdit.Location" value=@top>
+                <label asp-for="DefaultValuesToEdit.Location" class="radio-inline">
+                    <input type="radio" asp-for="DefaultValuesToEdit.Location" value=@top>
                     @top
-                </label><label asp-for="DefautValuesToEdit.Location" class="radio-inline">
-                    <input type="radio" asp-for="DefautValuesToEdit.Location" value=@middle>
+                </label><label asp-for="DefaultValuesToEdit.Location" class="radio-inline">
+                    <input type="radio" asp-for="DefaultValuesToEdit.Location" value=@middle>
                     @middle
                 </label>
-                <label asp-for="DefautValuesToEdit.Location" class="radio-inline">
-                    <input type="radio" asp-for="DefautValuesToEdit.Location" value=@bottom>
+                <label asp-for="DefaultValuesToEdit.Location" class="radio-inline">
+                    <input type="radio" asp-for="DefaultValuesToEdit.Location" value=@bottom>
                     @bottom
                 </label>
             </div>
             <div class="form-group">
-                <label asp-for="DefautValuesToEdit.Location" class="radio-inline">
-                    <input type="radio" asp-for="DefautValuesToEdit.Location" value=@bd1>
+                <label asp-for="DefaultValuesToEdit.Location" class="radio-inline">
+                    <input type="radio" asp-for="DefaultValuesToEdit.Location" value=@bd1>
                     @bd1
                 </label>
-                <label asp-for="DefautValuesToEdit.Location" class="radio-inline">
-                    <input type="radio" asp-for="DefautValuesToEdit.Location" value=@bd2>
+                <label asp-for="DefaultValuesToEdit.Location" class="radio-inline">
+                    <input type="radio" asp-for="DefaultValuesToEdit.Location" value=@bd2>
                     @bd2
                 </label>
-                <label asp-for="DefautValuesToEdit.Location" class="radio-inline">
-                    <input type="radio" asp-for="DefautValuesToEdit.Location" value=@bd3>
+                <label asp-for="DefaultValuesToEdit.Location" class="radio-inline">
+                    <input type="radio" asp-for="DefaultValuesToEdit.Location" value=@bd3>
                     @bd3
                 </label>
-                <label asp-for="DefautValuesToEdit.Location" class="radio-inline">
-                    <input type="radio" asp-for="DefautValuesToEdit.Location" value=@bd4>
+                <label asp-for="DefaultValuesToEdit.Location" class="radio-inline">
+                    <input type="radio" asp-for="DefaultValuesToEdit.Location" value=@bd4>
                     @bd4
                 </label>
             </div>
             <div class=" form-group">
-                <label asp-for="DefautValuesToEdit.Location" class="radio-inline">
-                    <input type="radio" asp-for="DefautValuesToEdit.Location" value=@shelf1>
+                <label asp-for="DefaultValuesToEdit.Location" class="radio-inline">
+                    <input type="radio" asp-for="DefaultValuesToEdit.Location" value=@shelf1>
                     @shelf1
                 </label>
             </div>
+            <label>Role</label>
+            <div class="form-group">
+                <label asp-for="DefaultValuesToEdit.Role" class="radio-inline">
+                    <input type="radio" asp-for="DefaultValuesToEdit.Role" value=@actor>
+                    @actor
+                </label>
+                <label asp-for="DefaultValuesToEdit.Role" class="radio-inline">
+                    <input type="radio" asp-for="DefaultValuesToEdit.Role" value=@composer>
+                    @composer
+                </label>
+                <label asp-for="DefaultValuesToEdit.Role" class="radio-inline">
+                    <input type="radio" asp-for="DefaultValuesToEdit.Role" value=@director>
+                    @director
+                </label>
+                <label asp-for="DefaultValuesToEdit.Role" class="radio-inline">
+                    <input type="radio" asp-for="DefaultValuesToEdit.Role" value=@writer>
+                    @writer
+                </label>
+            </div>
             <div>
-                <input type="hidden" asp-for="DefautValuesToEdit.Location" />
+                <input type="hidden" asp-for="DefaultValuesToEdit.Key" />
                 <input type="submit" value="Save" class="btn btn-default" /> |
                 <a asp-page="Index">Back To List</a>
             </div>

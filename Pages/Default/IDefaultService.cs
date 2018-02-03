@@ -8,6 +8,6 @@ namespace FilmClient.Pages.Default
     public interface IDefaultService
     {
         DefaultDto GetCurrentDefaultValues();
-        void UpdateDefaultValues(DefaultDto dto);
+        void UpdateDefaultValues(string key);
     }
 }
