@@ -37,10 +37,13 @@ namespace FilmClient.Pages.Person
             if (s == OperationStatus.OK)
             {
                 var key = _keyService.ConstructPersonKey(dto.LastName, dto.BirthdateString);
-                var response1 = await _client.GetAsync($"{_route}/{key}");
+                _action = "GetByKey";
+                var route1 = ComputeRoute(key);
+                var response1 = await _client.GetAsync(route1);
                 var stringResponse = await response1.Content.ReadAsStringAsync();
-                var p = JsonConvert.DeserializeObject<KeyedPersonDto>(stringResponse);
-                var val = new KeyedPersonDto(p.LastName, p.Birthdate, p.FirstMidName);
+                var list = JsonConvert.DeserializeObject<List<KeyedPersonDto>>(stringResponse);
+                var p = list.FirstOrDefault();
+                var val = new KeyedPersonDto(p.LastName, p.Birthdate, p.FirstMidName, key);
                 retVal.Add(val);
             }
             else
