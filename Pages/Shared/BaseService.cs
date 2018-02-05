@@ -91,7 +91,8 @@ namespace FilmClient.Pages.Shared
         }
 
         public abstract Task<OperationResult> UpdateAsync(T dto);
-        protected OperationResult ResultFromResponse(HttpResponseMessage response)
+
+        protected async Task<OperationResult> ResultFromResponseAsync(HttpResponseMessage response)
         {
             OperationResult result = new OperationResult(OperationStatus.OK);
             switch (response.StatusCode)
@@ -110,9 +111,14 @@ namespace FilmClient.Pages.Shared
                     break;
                 default:
                     throw new Exception("Unexpected status code");
-            }
+            };
+            result.ResultValue = await ExtractListFromAsync(response);            
             return result;
         }
+
+        protected abstract Task<List<IKeyedDto>> ExtractListFromAsync(HttpResponseMessage response);
+        
+
         protected abstract IBaseDto ArgFromDto(BaseDto dto);
         protected HttpContent ContentFromDto(BaseDto dto)
         {

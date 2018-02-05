@@ -32,7 +32,7 @@ namespace FilmClient.Pages.Person
             var jsonContent = new StringContent(JsonConvert.SerializeObject(b), Encoding.UTF8, "application/json");
             var response = await _client.PostAsync(route, jsonContent);
             var retVal = new List<IKeyedDto>();
-            var res = ResultFromResponse(response);
+            var res = await ResultFromResponseAsync(response);
             var s = res.Status;
             if (s == OperationStatus.OK)
             {
@@ -61,7 +61,7 @@ namespace FilmClient.Pages.Person
             _action = "Delete";
             var route = ComputeRoute(key);
             var response = await _client.DeleteAsync(route);            
-            return ResultFromResponse(response);
+            return await ResultFromResponseAsync(response);
         }
 
         public override async Task<List<PersonDto>> GetAllAsync()
@@ -86,8 +86,8 @@ namespace FilmClient.Pages.Person
             _action = "GetByKey";
             var route = ComputeRoute(key);
             var response = await _client.GetAsync(route);
-            var res = ResultFromResponse(response);
-            var s = res.Status;
+            var res = await ResultFromResponseAsync(response);
+            var s =  res.Status;
             var retVal = new List<IKeyedDto>();
             if (s == OperationStatus.OK)
             {
@@ -125,13 +125,25 @@ namespace FilmClient.Pages.Person
             var b = new BasePersonDto(dto.LastName, dto.BirthdateString, dto.FirstMidName);
             var jsonContent = new StringContent(JsonConvert.SerializeObject(b), Encoding.UTF8, "application/json");
             var response = await _client.PutAsync(_route, jsonContent);
-            return ResultFromResponse(response);
+            return await ResultFromResponseAsync(response);
         }
 
         protected override IBaseDto ArgFromDto(BaseDto dto)
         {
             var b = (PersonDto)dto;
             return new BasePersonDto(b.LastName, b.BirthdateString);
+        }
+
+        protected override async Task<List<IKeyedDto>> ExtractListFromAsync(HttpResponseMessage response)
+        {
+            var result = new List<IKeyedDto>();
+            var stringResponse = await response.Content.ReadAsStringAsync();
+            var list = JsonConvert.DeserializeObject<List<KeyedPersonDto>>(stringResponse);
+            foreach (var item in list)
+            {
+                result.Add((IKeyedDto)item);
+            }
+            return result;
         }
     }
 }

@@ -34,7 +34,7 @@ namespace FilmClient.Pages.Medium
             var b = new BaseMediumDto(dto.Title, dto.Year, dto.MediumType, dto.Location);
             var jsonContent = new StringContent(JsonConvert.SerializeObject(b), Encoding.UTF8, "application/json");
             var response = await _client.PostAsync(_route, jsonContent);
-            result = ResultFromResponse(response);
+            result = await ResultFromResponseAsync(response);
             KeyedMediumDto addResult;
             if (result.Status == OperationStatus.OK)
             {
@@ -75,7 +75,7 @@ namespace FilmClient.Pages.Medium
             _action = "Delete";
             var route = ComputeRoute(key);
             var response = await _client.DeleteAsync(route);
-            return ResultFromResponse(response);
+            return await ResultFromResponseAsync(response);
         }
 
         public override async Task<List<MediumDto>> GetAllAsync()
@@ -100,7 +100,7 @@ namespace FilmClient.Pages.Medium
             _action = "GetByKey";
             var route = ComputeRoute(key);
             var response = await _client.GetAsync(route);
-            var result = ResultFromResponse(response);
+            var result = await ResultFromResponseAsync(response);
             KeyedMediumDto retVal = null;
             var list = new List<IKeyedDto>();
             if (result.Status == OperationStatus.OK)
@@ -121,7 +121,7 @@ namespace FilmClient.Pages.Medium
             var b = new BaseMediumDto(dto.Title, dto.Year, dto.MediumType, dto.Location);
             var jsonContent = new StringContent(JsonConvert.SerializeObject(b), Encoding.UTF8, "application/json");
             var response = await _client.PutAsync(route, jsonContent);
-            return ResultFromResponse(response);
+            return await ResultFromResponseAsync(response);
         }
 
         public async Task<bool> HasMediumForFilmAsync(string title, short year)
@@ -150,6 +150,18 @@ namespace FilmClient.Pages.Medium
         {
             var b = (MediumDto)dto;
             return new BaseMediumDto(b.Title, b.Year, b.MediumType);
+        }
+
+        protected override async Task<List<IKeyedDto>> ExtractListFromAsync(HttpResponseMessage response)
+        {
+            var result = new List<IKeyedDto>();
+            var stringResponse = await response.Content.ReadAsStringAsync();
+            var list = JsonConvert.DeserializeObject<List<KeyedMediumDto>>(stringResponse);
+            foreach (var item in list)
+            {
+                result.Add((IKeyedDto)item);
+            }
+            return result;
         }
     }
 }

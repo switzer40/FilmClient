@@ -36,7 +36,7 @@ namespace FilmClient.Pages.Film
             var jsonContent = new StringContent(JsonConvert.SerializeObject(b), Encoding.UTF8, "application/json");
             var response = await _client.PostAsync(route, jsonContent);
             var retVal = new List<IKeyedDto>();
-            result = ResultFromResponse(response);
+            result = await ResultFromResponseAsync(response);
             var status = result.Status;
             if (status == OperationStatus.OK)
             {
@@ -63,7 +63,7 @@ namespace FilmClient.Pages.Film
             var route = ComputeRoute(key);
             var response = await _client.DeleteAsync(route);
             var data = _keyService.DeconstructFilmKey(key);
-            return ResultFromResponse(response);
+            return await ResultFromResponseAsync(response);
         }
 
         public override async Task<List<FilmDto>> GetAllAsync()
@@ -87,7 +87,7 @@ namespace FilmClient.Pages.Film
             var status = OperationStatus.OK;
             var retVal = new List<IKeyedDto>();
             var response = await _client.GetAsync(route);
-            var result = ResultFromResponse(response);
+            var result = await ResultFromResponseAsync(response);
             status = result.Status;
             if (status == OperationStatus.OK)
             {
@@ -114,13 +114,25 @@ namespace FilmClient.Pages.Film
             var b = new BaseFilmDto(dto.Title, dto.Year, dto.Length);
             var jsonContent = new StringContent(JsonConvert.SerializeObject(b), Encoding.UTF8, "application/json");
             var response = await _client.PutAsync(route, jsonContent);
-            return ResultFromResponse(response);
+            return await ResultFromResponseAsync(response);
         }
 
         protected override IBaseDto ArgFromDto(BaseDto dto)
         {
             var b = (FilmDto)dto;
             return new BaseFilmDto(b.Title, b.Year);
+        }
+
+        protected override async Task<List<IKeyedDto>> ExtractListFromAsync(HttpResponseMessage response)
+        {
+            var result = new List<IKeyedDto>();
+            var stringResponse = await response.Content.ReadAsStringAsync();
+            var list = JsonConvert.DeserializeObject<List<KeyedFilmDto>>(stringResponse);
+            foreach (var item in list)
+            {
+                result.Add((IKeyedDto)item);
+            }
+            return result;
         }
     }
 }
