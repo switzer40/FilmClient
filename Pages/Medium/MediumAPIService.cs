@@ -31,15 +31,19 @@ namespace FilmClient.Pages.Medium
         public override async Task<OperationResult> AddAsync(MediumDto dto)
         {
             var result = new OperationResult(OperationStatus.OK);
+            _action = "Add";
+            var route = ComputeRoute();
             var b = new BaseMediumDto(dto.Title, dto.Year, dto.MediumType, dto.Location);
             var jsonContent = new StringContent(JsonConvert.SerializeObject(b), Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync(_route, jsonContent);
+            var response = await _client.PostAsync(route, jsonContent);
             result = await ResultFromResponseAsync(response);
             KeyedMediumDto addResult;
             if (result.Status == OperationStatus.OK)
             {
                 var key = _keyService.ConstructMediumKey(dto.Title, dto.Year, dto.MediumType);
-                var response1 = await _client.GetAsync($"{_route}/{key}");
+                _action = "GetByKey";
+                var route1 = ComputeRoute(key);
+                var response1 = await _client.GetAsync(route1);
                 var stringResponse = await response1.Content.ReadAsStringAsync();
                 addResult = JsonConvert.DeserializeObject<KeyedMediumDto>(stringResponse);
                 addResult.Key = _keyService.ConstructMediumKey(dto.Title, dto.Year, dto.MediumType);
@@ -100,15 +104,14 @@ namespace FilmClient.Pages.Medium
             _action = "GetByKey";
             var route = ComputeRoute(key);
             var response = await _client.GetAsync(route);
-            var result = await ResultFromResponseAsync(response);
-            KeyedMediumDto retVal = null;
+            var result = await ResultFromResponseAsync(response);            
             var list = new List<IKeyedDto>();
             if (result.Status == OperationStatus.OK)
             {
                 var stringResponse = await response.Content.ReadAsStringAsync();
-                retVal = JsonConvert.DeserializeObject<KeyedMediumDto>(stringResponse);
-                retVal.Key = key;                
-                list.Add(retVal); 
+                var media = JsonConvert.DeserializeObject<List<KeyedMediumDto>>(stringResponse);
+                var m = media.FirstOrDefault();
+                list.Add(m);               
             }
             result.ResultValue = list;
             return result;

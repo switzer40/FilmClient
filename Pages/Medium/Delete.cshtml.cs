@@ -33,9 +33,7 @@ namespace FilmClient.Pages.Medium
             if (s == OperationStatus.OK)
             {
                 var m = (KeyedMediumDto)res.ResultValue.Single();
-                MediumToDelete.Title = m.Title;
-                MediumToDelete.Year = m.Year;
-                MediumToDelete.MediumType = m.MediumType;
+                MediumToDelete = new MediumDto(m.Title, m.Year, m.MediumType, m.Location, m.HasGermanSubtitles);
                 return Page();
             }
             else
