@@ -40,8 +40,12 @@ namespace FilmClient.Pages.FilmPerson
 
         public override async Task<int> CountAsync()
         {
-            var filmPeople = await GetAllAsync();
-            return filmPeople.Count;
+            _action = "Count";
+            var route = ComputeRoute();
+            var response = await _client.GetAsync(route);
+            var stringResponse = await response.Content.ReadAsStringAsync();
+            var filmPeople = JsonConvert.DeserializeObject<List<FilmPersonDto>>(stringResponse);
+            return filmPeople.Count();
         }
 
         public override async Task<OperationResult> DeleteAsync(string key)
@@ -52,10 +56,11 @@ namespace FilmClient.Pages.FilmPerson
             return await ResultFromResponseAsync(response);
         }
 
-        public override async Task<List<FilmPersonDto>> GetAllAsync()
+        public override async Task<List<FilmPersonDto>> GetAllAsync(int pageIndex, int pageSize)
         {
             _action = "GetAll";
-            var route = ComputeRoute();
+            var queryString = $"?pageIndex={pageIndex}&pageSize={pageSize}";
+            var route = ComputeRoute() + queryString;
             var result = new List<FilmPersonDto>();
             var response = await _client.GetAsync(route);
             var stringResponse = await response.Content.ReadAsStringAsync();
@@ -98,6 +103,54 @@ namespace FilmClient.Pages.FilmPerson
             result.ResultValue = list;
             return result;
 
+        }
+
+        public async Task<OperationResult> GetByLastNameBirthdateAndRoleAsync(string lastName, string birthdate, string role)
+        {
+            OperationResult result = new OperationResult();
+            _action = "Count";
+            var route = ComputeRoute();
+            var response = await _client.GetAsync(route);
+            var result1 = await ResultFromResponseAsync(response);
+            var s = result1.Status;
+            if (s == OperationStatus.OK)
+            {
+                var stringResponse = await response.Content.ReadAsStringAsync();
+                var filmPeople = JsonConvert.DeserializeObject<List<KeyedFilmPersonDto>>(stringResponse);
+                var list = filmPeople.Where(fp => fp.LastName == lastName && fp.Birthdate == birthdate && fp.Role == role);
+                var retVal = new List<IKeyedDto>();
+                foreach (var item in list)
+                {
+                    var val = (IKeyedDto)item;
+                    retVal.Add(val);
+                }
+                result = new OperationResult(s, retVal);
+            }
+            return result;
+        }
+
+        public async Task<OperationResult> GetByTitleYearAndRoleAsync(string title, short year, string role)
+        {
+            OperationResult result = new OperationResult();
+            _action = "Count";
+            var route = ComputeRoute();
+            var response = await _client.GetAsync(route);
+            var result1 = await ResultFromResponseAsync(response);
+            var s = result1.Status;
+            if (s == OperationStatus.OK)
+            {
+                var stringResponse = await response.Content.ReadAsStringAsync();
+                var filmPeople = JsonConvert.DeserializeObject<List<KeyedFilmPersonDto>>(stringResponse);
+                var list = filmPeople.Where(fp => fp.Title == title && fp.Year == year && fp.Role == role);
+                var retVal = new List<IKeyedDto>();
+                foreach (var item in list)
+                {
+                    var val = (IKeyedDto)item;
+                    retVal.Add(val);
+                }
+                result = new OperationResult(s, retVal);
+            }
+            return result;
         }
 
         public override string KeyFrom(FilmPersonDto dto)

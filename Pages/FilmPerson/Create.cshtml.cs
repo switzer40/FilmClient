@@ -20,7 +20,7 @@ namespace FilmClient.Pages.FilmPerson
         public FilmPersonDto FilmPersonToAdd { get; set; }
         public async Task<IActionResult> OnGetAsync()
         {
-            FilmPersonToAdd = (await _service.GetAllAsync()).LastOrDefault();
+            FilmPersonToAdd = (await _service.GetAllAsync(_numberOfPages, PageSize)).LastOrDefault();
             return Page();
         }
         public async Task<IActionResult> OnPostAsync()

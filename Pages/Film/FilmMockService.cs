@@ -10,6 +10,16 @@ namespace FilmClient.Pages.Film
 {
     public class FilmMockService : BaseMockService<FilmDto>, IFilmService
     {
+        public FilmDto GetByTitleAndYear(string title, short year)
+        {
+            return _store.Values.ToList().Where(f => f.Title == title && f.Year == year).SingleOrDefault();
+        }
+
+        public async Task<FilmDto> GetByTitleAndYearAsync(string title, short year)
+        {
+            return await Task.Run(() => GetByTitleAndYear(title, year));
+        }
+
         public override string KeyFrom(FilmDto dto)
         {
             return _keyService.ConstructFilmKey(dto.Title, dto.Year);

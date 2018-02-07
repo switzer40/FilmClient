@@ -64,13 +64,13 @@ namespace FilmClient.Pages.Shared
         public abstract Task<OperationResult> DeleteAsync(string key);
         
 
-        public List<T> GetAll()
+        public List<T> GetAll(int pageIndex, int pageSize)
         {
             // Not needed
             return new List<T>();
         }
 
-        public abstract Task<List<T>> GetAllAsync();
+        public abstract Task<List<T>> GetAllAsync(int pageIndex, int pageSize);
         
 
         public OperationResult GetByKey(string key)
@@ -124,6 +124,15 @@ namespace FilmClient.Pages.Shared
         {
             var arg = ArgFromDto(dto);
             return new StringContent(JsonConvert.SerializeObject(arg), Encoding.UTF8, "application/json");
+        }
+        protected async Task<OperationResult> GetListResultAsync(string action)
+        {
+            _action = action;
+            var route = ComputeRoute();
+            var response = await _client.GetAsync(route);
+            var stringResponse = await response.Content.ReadAsStringAsync();
+            var list = JsonConvert.DeserializeObject<List<IKeyedDto>>(stringResponse);
+            return new OperationResult(OperationStatus.OK, list);
         }
     }
 }

@@ -13,17 +13,20 @@ using FilmAPI.Common.DTOs;
 
 namespace FilmClient.Pages.FilmPerson
 {
-    public class IndexModel : PageModel
+    public class IndexModel : BasePageModel
     {
         private readonly IFilmPersonService _service;
         private readonly IPersonService _personService;
-        private readonly IKeyService _keyService;
-        public IndexModel(IFilmPersonService service, IPersonService pservice)
+        
+        
+        public IndexModel(IFilmPersonService service, IPersonService pservice, IErrorService eservice) : base(eservice)
         {
             _service = service;
             _personService = pservice;
             _keyService = new KeyService();
             FilmPeople = new List<FilmPersonModel>();
+            _totalRows = _service.Count();
+            CalculateRowData(_totalRows);
         }
         [BindProperty]
         public List<FilmPersonModel> FilmPeople { get; set; }
@@ -31,7 +34,7 @@ namespace FilmClient.Pages.FilmPerson
 
         public async Task OnGetAsync()
         {
-            var filmPeople = await _service.GetAllAsync();
+            var filmPeople = await _service.GetAllAsync(_pageNumber, PageSize);
             foreach (var fp in filmPeople)
             {
                 PersonDto p = await GetPersonAsync(fp.LastName, fp.Birthdate);
@@ -50,7 +53,22 @@ namespace FilmClient.Pages.FilmPerson
                 FilmPeople.Add(model);
             }
         }
-
+        public IActionResult PreviousPage()
+        {
+            if (_pageNumber > 0)
+            {
+                _pageNumber--;
+            }
+            return Page();
+        }
+        public IActionResult NextPage()
+        {
+            if (_pageNumber < _numberOfPages)
+            {
+                _pageNumber++;
+            }
+            return Page();
+        }
         private async Task<PersonDto> GetPersonAsync(string lastName, string birthdate)
         {
             PersonDto result = null;

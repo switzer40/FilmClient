@@ -6,29 +6,42 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using FilmAPI.Common.Interfaces;
 using FilmAPI.Common.Services;
+using FilmClient.Pages.Shared;
 
 namespace FilmClient.Pages.Person
 {
-    public class IndexModel : PageModel
+    public class IndexModel : BasePageModel
     {
         private readonly IPersonService _service;
-        private readonly IKeyService _keyService;
-        public IndexModel(IPersonService service)
+        
+        public IndexModel(IPersonService service, IErrorService eservice) : base(eservice)
         {
             _service = service;
             _keyService = new KeyService();
             People = new List<PersonDto>();
+            _totalRows = 0;
         }
         public List<PersonDto> People { get; set; }
         public async Task OnGetAsync()
         {
-            var people = await _service.GetAllAsync();
+            await InitDataAsync();
+            var people = await _service.GetAllAsync(_pageNumber, PageSize);
             foreach (var p in people)
             {
                 p.ShortBirthdate = DateTime.Parse(p.BirthdateString).ToShortDateString();
                 p.Key = _keyService.ConstructPersonKey(p.LastName, p.BirthdateString);
                 People.Add(p);
             }
+        }
+
+        private async Task InitDataAsync()
+        {
+            if (_totalRows > 0)
+            {
+                return; //initialize only once
+            }
+            _totalRows = await _service.CountAsync();
+            CalculateRowData(_totalRows);
         }
     }
 }

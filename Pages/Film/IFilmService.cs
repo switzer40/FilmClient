@@ -1,4 +1,5 @@
 ﻿using FilmAPI.Common.DTOs;
+using FilmAPI.Common.Utilities;
 using FilmClient.Pages.Shared;
 using System;
 using System.Collections.Generic;
@@ -9,5 +10,6 @@ namespace FilmClient.Pages.Film
 {
     public interface IFilmService : IService<FilmDto>
     {
+        Task<FilmDto> GetByTitleAndYearAsync(string title, short year);
     }
 }

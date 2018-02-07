@@ -1,6 +1,7 @@
 ﻿using FilmAPI.Common.Interfaces;
 using FilmAPI.Common.Services;
 using FilmAPI.Common.Utilities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
@@ -17,6 +18,7 @@ namespace FilmClient.Pages.Shared
             ErrorService = errorService;
             _keyService = new KeyService();
         }
+        protected const int PageSize = 10;
         protected OperationStatus ErrorStatus;
         protected Dictionary<int, string> CreateReasons;
         protected Dictionary<int, string> DeleteReasons;
@@ -24,7 +26,12 @@ namespace FilmClient.Pages.Shared
         protected string _action;
         protected string _mainProperty;
         protected IKeyService _keyService;
+        protected int _totalRows;
+        protected int _numberOfPages;
+        protected int _pageNumber;
         public IErrorService ErrorService { get; }
+        public int PageNumber => _pageNumber;
+        public int NumberOfPages => _numberOfPages;
         public void InitializeCreateReasons()
         {
             CreateReasons = new Dictionary<int, string>();
@@ -79,6 +86,15 @@ namespace FilmClient.Pages.Shared
                 default:
                     throw new Exception($"Unknown action");
             }
+        }
+        protected void CalculateRowData(int totalRows)
+        {
+            var restRows = totalRows % PageSize;
+            var rowQuotient = totalRows / PageSize;
+            _numberOfPages = rowQuotient + 1;
+            var p = Request.Query["p"].FirstOrDefault();
+            _pageNumber = int.TryParse(p, out int pageNumber) ? pageNumber : 0;
+
         }
     }
 }

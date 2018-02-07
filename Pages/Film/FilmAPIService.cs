@@ -52,7 +52,11 @@ namespace FilmClient.Pages.Film
 
         public override async Task<int> CountAsync()
         {
-            var films = await GetAllAsync();
+            _action = "Count";
+            var route = ComputeRoute();
+            var response = await _client.GetAsync(route);
+            var stringResponse = await response.Content.ReadAsStringAsync();
+            var films = JsonConvert.DeserializeObject<List<FilmDto>>(stringResponse);
             return films.Count();
         }
 
@@ -66,10 +70,11 @@ namespace FilmClient.Pages.Film
             return await ResultFromResponseAsync(response);
         }
 
-        public override async Task<List<FilmDto>> GetAllAsync()
+        public override async Task<List<FilmDto>> GetAllAsync(int pageIndex, int pageSize)
         {
             _action = "GetAll";
-            var route = ComputeRoute();
+            var queryString = $"?pageIndex={pageIndex}&pageSize={pageSize}";
+            var route = ComputeRoute() + queryString;
             var response = await _client.GetAsync(route);
             var stringResponse = await response.Content.ReadAsStringAsync();
             var films = JsonConvert.DeserializeObject<List<FilmDto>>(stringResponse);
@@ -101,7 +106,21 @@ namespace FilmClient.Pages.Film
             }
             return new OperationResult(status, retVal);
         }
-      
+
+        public async Task<FilmDto> GetByTitleAndYearAsync(string title, short year)
+        {
+            FilmDto result = null;
+            var key = _keyService.ConstructFilmKey(title, year);
+            var res = await GetByKeyAsync(key);
+            var s = res.Status;
+            if (s == OperationStatus.OK)
+            {
+                var f = (KeyedFilmDto)res.ResultValue.Single();
+                result = new FilmDto(f.Title, f.Year, f.Length);
+            }
+            return result;
+        }
+
         public override string KeyFrom(FilmDto dto)
         {
             return _keyService.ConstructFilmKey(dto.Title, dto.Year);

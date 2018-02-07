@@ -13,14 +13,14 @@ namespace FilmClient.Pages.Shared
         Task<int> CountAsync();
         Task<OperationResult> DeleteAsync(string key);
         string KeyFrom(T dto);
-        Task<List<T>> GetAllAsync();
+        Task<List<T>> GetAllAsync(int pageIndex, int pageSize);
         OperationResult GetByKey(string key);
         Task<OperationResult> GetByKeyAsync(string key);
         Task<OperationResult> UpdateAsync(T dto);
         OperationResult Add(T t);
         int Count();
         OperationResult Delete(string key);
-        List<T> GetAll();        
+        List<T> GetAll(int pageIndex, int pageSize);        
         OperationResult Update(T dto);
     }
 }

@@ -48,5 +48,18 @@
         }
     </tbody>
 </table>
-
+<div class="row">
+    @if (Model.PageNumber > 0)
+    {
+        <div class="col-md-1">
+            <a href="?p=@(Model.PageNumber-1)">Previous</a>
+        </div>
+    }
+    @if (Model.PageNumber < Model.NumberOfPages)
+    {
+        <div class="col-md-1">
+            <a href="?p=@(Model.PageNumber+1)">Next</a>
+        </div>
+    }
+</div>
 

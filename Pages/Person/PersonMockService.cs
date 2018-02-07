@@ -12,7 +12,12 @@ namespace FilmClient.Pages.Person
     {
         public async Task<PersonDto> GetByLastNameAndBirthdateAsync(string lastName, string birthdate)
         {
-            return (await GetAllAsync()).Where(p => p.LastName == lastName && p.BirthdateString == birthdate).SingleOrDefault();
+            return await Task.Run(() => GetByLastNameAndBirthdate(lastName, birthdate));
+        }
+
+        private PersonDto GetByLastNameAndBirthdate(string lastName, string birthdate)
+        {
+            return (_store.Values).Where(p => p.LastName == lastName && p.BirthdateString == birthdate).SingleOrDefault();
         }
 
         public override string KeyFrom(PersonDto dto)

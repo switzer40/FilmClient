@@ -55,7 +55,11 @@ namespace FilmClient.Pages.Person
 
         public override async Task<int> CountAsync()
         {
-            var people = await GetAllAsync();
+            _action = "Count";
+            var route = ComputeRoute();
+            var response = await _client.GetAsync(route);
+            var stringResponse = await response.Content.ReadAsStringAsync();
+            var people = JsonConvert.DeserializeObject<List<PersonDto>>(stringResponse);
             return people.Count();
         }
 
@@ -67,10 +71,11 @@ namespace FilmClient.Pages.Person
             return await ResultFromResponseAsync(response);
         }
 
-        public override async Task<List<PersonDto>> GetAllAsync()
+        public override async Task<List<PersonDto>> GetAllAsync(int pageIndex, int pageSize)
         {
             _action = "GetAll";
-            var route = ComputeRoute();
+            var queryString = $"?pageIndex={pageIndex}&pageSize={pageSize}";
+            var route = ComputeRoute() + queryString;
             var response = await _client.GetAsync(route);
             var stringResponse = await response.Content.ReadAsStringAsync();
             var rawPeople = JsonConvert.DeserializeObject<List<KeyedPersonDto>>(stringResponse);

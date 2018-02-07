@@ -14,13 +14,13 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FilmClient.Pages.Person
 {
-    public class InfoModel : PageModel
+    public class InfoModel : BasePageModel
     {
         private readonly IPersonService _personService;
-        private readonly IFilmPersonService _filmPersonService;
-        private readonly IKeyService _keyService;
+        private readonly IFilmPersonService _filmPersonService;       
         public InfoModel(IPersonService pservice,
-                         IFilmPersonService fpservice)
+                         IFilmPersonService fpservice,
+                         IErrorService eservice) : base(eservice)
         {
             _personService = pservice;
             _filmPersonService = fpservice;
@@ -73,14 +73,12 @@ namespace FilmClient.Pages.Person
         private async Task<List<(string Title, short Year)>> ExtractContributionsAsync(string role)
         {
             List<(string Title, short Year)> result = new List<(string Title, short Year)>();
-            var filmPeople = await _filmPersonService.GetAllAsync();
-            foreach (var fp in filmPeople)
+            var res = await _filmPersonService.GetByLastNameBirthdateAndRoleAsync(LastName, Birthdate, role);            
+            foreach (var item in res.ResultValue)
             {
-                if (fp.LastName == LastName && fp.Birthdate == Birthdate && fp.Role == role)
-                {
-                    result.Add((fp.Title, fp.Year));
-                }
-            }
+                var fp = (KeyedFilmPersonDto)item;
+                result.Add((fp.Title, fp.Year));
+            }            
             return result;
         }
     }

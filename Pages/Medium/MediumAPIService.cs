@@ -57,22 +57,6 @@ namespace FilmClient.Pages.Medium
             return result;
         }
 
-        public async Task CascadeDeleteForFilmAsync(string title, short year)
-        {
-            var media = await GetAllAsync();
-            var toBeDeleted = media.Where(m => m.Title == title && m.Year == year);
-            await DeleteRangeAsync(toBeDeleted);
-        }
-
-        private async Task DeleteRangeAsync(IEnumerable<MediumDto> toBeDeleted)
-        {
-            foreach (var m in toBeDeleted)
-            {
-                var key = _keyService.ConstructMediumKey(m.Title, m.Year, m.MediumType);
-                var s = await DeleteAsync(key);
-            }
-        }
-        
         [ValidateMediumExists]
         public override async Task<OperationResult> DeleteAsync(string key)
         {
@@ -82,10 +66,11 @@ namespace FilmClient.Pages.Medium
             return await ResultFromResponseAsync(response);
         }
 
-        public override async Task<List<MediumDto>> GetAllAsync()
+        public override async Task<List<MediumDto>> GetAllAsync(int pageIndex, int pageSize)
         {
             _action = "GetAll";
-            var route = ComputeRoute();
+            var queryString = $"?pageIndex={pageIndex}&pageSize={pageSize}";
+            var route = ComputeRoute() + queryString;
             var response = await _client.GetAsync(route);
             var stringResponse = await response.Content.ReadAsStringAsync();
             var rawMedia = JsonConvert.DeserializeObject<List<KeyedMediumDto>>(stringResponse);
@@ -127,20 +112,15 @@ namespace FilmClient.Pages.Medium
             return await ResultFromResponseAsync(response);
         }
 
-        public async Task<bool> HasMediumForFilmAsync(string title, short year)
-        {
-            return ((await MediaForFilmAsync(title, year)).Count > 0);
-        }
-
-        public async Task<List<MediumDto>> MediaForFilmAsync(string title, short year)
-        {
-            var spec = new MediumForTitleAndYear(title, year);
-            return (await GetAllAsync()).Where(spec.Predicate).ToList();
-        }
-        
+     
+       
         public override async Task<int> CountAsync()
         {
-            var media = await GetAllAsync();
+            _action = "Count";
+            var route = ComputeRoute();
+            var response = await _client.GetAsync(route);
+            var stringResponse = await response.Content.ReadAsStringAsync();
+            var media = JsonConvert.DeserializeObject<List<MediumDto>>(stringResponse);
             return media.Count();
         }
 
@@ -166,5 +146,18 @@ namespace FilmClient.Pages.Medium
             }
             return result;
         }
+
+        public async Task<MediumDto> GetByTitleYearAndMediumTypeAsync(string title, short year, string mediumType)
+        {
+            MediumDto result = null;
+            var key = _keyService.ConstructMediumKey(title, year, mediumType);
+            var res = await GetByKeyAsync(key);
+            if (res.Status == OperationStatus.OK)
+            {
+                var m = (KeyedMediumDto)res.ResultValue.Single();
+                result = new MediumDto(m.Title, m.Year, m.MediumType, m.Location, m.HasGermanSubtitles);
+            }
+            return result;
+        }       
     }
 }

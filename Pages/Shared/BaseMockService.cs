@@ -35,7 +35,7 @@ namespace FilmClient.Pages.Shared
        
         public int Count()
         {
-            return GetAll().Count;
+            return (_store.Values).Count;
         }
 
         public async Task<int> CountAsync()
@@ -54,14 +54,16 @@ namespace FilmClient.Pages.Shared
             return await Task.Run(() => Delete(key));
         }
 
-        public List<T> GetAll()
+        public List<T> GetAll(int pageIndex, int pageSize)
         {
-            return _store.Values.ToList();
+            return (_store.Values
+                .Skip(pageIndex * pageSize)
+                .Take(pageSize)).ToList();
         }
 
-        public async Task<List<T>> GetAllAsync()
+        public async Task<List<T>> GetAllAsync(int pageIndex, int pageSize)
         {
-            return await Task.Run(() => GetAll());
+            return await Task.Run(() => GetAll(pageIndex, pageSize));
         }
 
         public OperationResult GetByKey(string key)

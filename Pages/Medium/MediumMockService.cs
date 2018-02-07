@@ -16,6 +16,18 @@ namespace FilmClient.Pages.Medium
         {            
         }
 
+        public async Task<MediumDto> GetByTitleYearAndMediumTypeAsync(string title, short year, string mediumType)
+        {
+            return await Task.Run(() => GetByTitleYearAndMediatype(title, year, mediumType));
+        }
+
+        private MediumDto GetByTitleYearAndMediatype(string title, short year, string mediumType)
+        {
+            var list = _store.Values.ToList();
+            var media = list.Where(m => m.Title == title && m.Year == year && m.MediumType == mediumType);
+            return media.Single();
+        }
+
         public override string KeyFrom(MediumDto dto)
         {
             return _keyService.ConstructMediumKey(dto.Title, dto.Year, dto.MediumType);
