@@ -17,14 +17,14 @@ namespace FilmClient.Pages.Film
         public IndexModel(IFilmService service, IErrorService eservice) : base(eservice)
         {
             _service = service;
-            _totalRows = _service.Count();
-            CalculateRowData(_totalRows);
+            _totalRows = 0;
         }
 
         public IList<FilmDto> Films { get; set; }
 
         public async Task OnGetAsync()
         {
+            await InitDataAsync();
             var films = await _service.GetAllAsync(_pageNumber, PageSize);
             Films = new List<FilmDto>();
             foreach (var f in films)
@@ -33,21 +33,15 @@ namespace FilmClient.Pages.Film
                 Films.Add(f);
             }
         }
-        public IActionResult PreviousPage()
+
+        private async Task InitDataAsync()
         {
-            if (_pageNumber > 0)
+            if(_totalRows > 0)
             {
-                _pageNumber--;
+                return; //initialize only once
             }
-            return Page();
-        }
-        public IActionResult NextPage()
-        {
-            if (_pageNumber < _numberOfPages)
-            {
-                _pageNumber++;
-            }
-            return Page();
+            _totalRows = await _service.CountAsync();
+            CalculateRowData(_totalRows);
         }
     }
 }

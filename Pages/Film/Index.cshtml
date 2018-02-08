@@ -48,5 +48,17 @@
 
     </tbody>
 </table>
-<button asp-page-handler="PreviousPage" class="btn btn-default">Previous</button>
-<button asp-page-handler="NextPage" class="btn btn-default">Next</button>
+<div class="row">
+    @if (Model.PageNumber > 0)
+    {
+        <div class="col-md-1">
+            <a href="?p=@(Model.PageNumber-1)">Previous</a>
+        </div>
+    }
+    @if (Model.PageNumber < Model.NumberOfPages - 1)
+    {
+        <div class="col-md-1">
+            <a href="?p=@(Model.PageNumber+1)">Next</a>
+        </div>
+    }
+</div>

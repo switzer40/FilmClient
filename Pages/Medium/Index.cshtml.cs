@@ -19,13 +19,13 @@ namespace FilmClient.Pages.Medium
             _service = service;
             _keyService = new KeyService();
             Media = new List<MediumDto>();
-            _totalRows = _service.Count();
-            CalculateRowData(_totalRows);
+            _totalRows = 0;            
         }
         [BindProperty]
         public List<MediumDto> Media { get; set; }
         public async Task OnGetAsync()
         {
+            await InitDataAsync();
             var media = await _service.GetAllAsync(_pageNumber, PageSize);
             foreach (var m in media)
             {
@@ -33,22 +33,15 @@ namespace FilmClient.Pages.Medium
                 Media.Add(m);
             }
         }
-        public IActionResult PreviousPage()
+
+        private async Task InitDataAsync()
         {
-            if (_pageNumber > 0)
+            if (_totalRows > 0)
             {
-                _pageNumber--;
+                return; //initialize only once
             }
-            return Page();
-        }
-        
-        public IActionResult NextPage()
-        {
-            if (_pageNumber < _numberOfPages)
-            {
-                _pageNumber++;
-            }
-            return Page();
-        }
+            _totalRows = await _service.CountAsync();
+            CalculateRowData(_totalRows);
+        }        
     }
 }

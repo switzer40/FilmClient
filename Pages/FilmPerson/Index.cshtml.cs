@@ -25,8 +25,8 @@ namespace FilmClient.Pages.FilmPerson
             _personService = pservice;
             _keyService = new KeyService();
             FilmPeople = new List<FilmPersonModel>();
-            _totalRows = _service.Count();
-            CalculateRowData(_totalRows);
+            _totalRows = 0;
+            
         }
         [BindProperty]
         public List<FilmPersonModel> FilmPeople { get; set; }
@@ -34,17 +34,13 @@ namespace FilmClient.Pages.FilmPerson
 
         public async Task OnGetAsync()
         {
+            await InitDataAsync();
             var filmPeople = await _service.GetAllAsync(_pageNumber, PageSize);
             foreach (var fp in filmPeople)
             {
                 PersonDto p = await GetPersonAsync(fp.LastName, fp.Birthdate);
-                p.FullName = $"{p.FirstMidName} {p.LastName}";
-                var model = new FilmPersonModel();
-                model.Title = fp.Title;
-                model.Year = fp.Year;
-                model.Contributor = p.FullName;
-                model.ContributorBirthdate = fp.Birthdate;
-                model.Role = fp.Role;
+                p.FullName = $"{p.FirstMidName} {p.LastName}";                
+                var model = new FilmPersonModel(fp.Title, fp.Year, p.LastName, p.FirstMidName, fp.Birthdate, fp.Role);                
                 model.Key = _keyService.ConstructFilmPersonKey(fp.Title,
                                                                fp.Year,
                                                                fp.LastName,
@@ -53,22 +49,16 @@ namespace FilmClient.Pages.FilmPerson
                 FilmPeople.Add(model);
             }
         }
-        public IActionResult PreviousPage()
+        private async Task InitDataAsync()
         {
-            if (_pageNumber > 0)
+            if (_totalRows > 0)
             {
-                _pageNumber--;
+                return; //initialize only once
             }
-            return Page();
+            _totalRows = await _service.CountAsync();
+            CalculateRowData(_totalRows);
         }
-        public IActionResult NextPage()
-        {
-            if (_pageNumber < _numberOfPages)
-            {
-                _pageNumber++;
-            }
-            return Page();
-        }
+        
         private async Task<PersonDto> GetPersonAsync(string lastName, string birthdate)
         {
             PersonDto result = null;
@@ -79,7 +69,7 @@ namespace FilmClient.Pages.FilmPerson
             if (s == OperationStatus.OK)
             {
                 var p = (KeyedPersonDto) res.ResultValue.Single();
-                result = new PersonDto(p.LastName, p.Birthdate, p.FirstMidName);
+                result = new PersonDto(p.LastName,p.Birthdate, p.FirstMidName);
             }
             return result;
         }
