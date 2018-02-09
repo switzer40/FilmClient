@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using FilmClient.Pages.Shared;
 using FilmAPI.Common.Services;
 using FilmAPI.Common.Utilities;
+using FilmAPI.Common.DTOs;
 
 namespace FilmClient.Pages.Film
 {
@@ -29,6 +30,7 @@ namespace FilmClient.Pages.Film
 
         public IActionResult OnGet()
         {
+            FilmToAdd = new FilmDto();           
             return Page();
         }
 

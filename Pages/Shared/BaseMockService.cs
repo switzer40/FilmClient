@@ -121,5 +121,10 @@ namespace FilmClient.Pages.Shared
         {
             return await Task.Run(() => Update(dto));
         }
+
+        public Task<T> GetLastEntryAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

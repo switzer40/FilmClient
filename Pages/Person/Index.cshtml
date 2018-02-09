@@ -49,6 +49,10 @@
     </tbody>
 </table>
 <div class="row">
+<div class="row">
+    <div class="col-md-1">
+        <a href="?p=0">First</a>
+    </div>
     @if (Model.PageNumber > 0)
     {
         <div class="col-md-1">
@@ -61,5 +65,8 @@
             <a href="?p=@(Model.PageNumber+1)">Next</a>
         </div>
     }
+    <div class="col-md-1">
+        <a href="?p=@(Model.LastPage)">Last</a>
+    </div>
 </div>
 

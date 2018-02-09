@@ -121,6 +121,16 @@ namespace FilmClient.Pages.Film
             return result;
         }
 
+        public override async Task<FilmDto> GetLastEntryAsync()
+        {
+            _action = "Count";
+            var route = ComputeRoute();
+            var response = await _client.GetAsync(route);
+            var res = await ResultFromResponseAsync(response);
+            var f = (KeyedFilmDto) res.ResultValue.LastOrDefault();
+            return new FilmDto(f.Title, f.Year, f.Length);
+        }
+
         public override string KeyFrom(FilmDto dto)
         {
             return _keyService.ConstructFilmKey(dto.Title, dto.Year);

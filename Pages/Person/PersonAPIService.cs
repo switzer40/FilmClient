@@ -123,6 +123,16 @@ namespace FilmClient.Pages.Person
             return result;
         }
 
+        public override async Task<PersonDto> GetLastEntryAsync()
+        {           
+            _action = "Count";
+            var route = ComputeRoute();
+            var response = await _client.GetAsync(route);
+            var res = await ResultFromResponseAsync(response);
+            var p = (KeyedPersonDto)res.ResultValue.SingleOrDefault();
+            return new PersonDto(p.LastName, p.Birthdate, p.FirstMidName);            
+        }
+
         public override string KeyFrom(PersonDto dto)
         {
             return _keyService.ConstructPersonKey(dto.LastName, dto.BirthdateString);

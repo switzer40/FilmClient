@@ -153,6 +153,25 @@ namespace FilmClient.Pages.FilmPerson
             return result;
         }
 
+        public override async Task<FilmPersonDto> GetLastEntryAsync()
+        {
+            FilmPersonDto result = null;
+            _action = "Count";
+            var route = ComputeRoute();
+            var response = await _client.GetAsync(route);
+            var res = await ResultFromResponseAsync(response);
+            var fp = (KeyedFilmPersonDto)res.ResultValue.LastOrDefault();
+            if (fp != null)
+            {
+                result = new FilmPersonDto(fp.Title, fp.Year, fp.LastName, fp.Birthdate, fp.Role);
+            }
+            else
+            {
+                result = new FilmPersonDto();
+            }
+            return result;
+        }
+
         public override string KeyFrom(FilmPersonDto dto)
         {
             return _keyService.ConstructFilmPersonKey(dto.Title,

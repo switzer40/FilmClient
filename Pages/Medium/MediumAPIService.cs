@@ -3,6 +3,7 @@ using FilmAPI.Common.DTOs;
 using FilmAPI.Common.Interfaces;
 using FilmAPI.Common.Services;
 using FilmAPI.Common.Utilities;
+using FilmClient.Pages.Default;
 using FilmClient.Pages.Film;
 using FilmClient.Pages.Person;
 using FilmClient.Pages.Shared;
@@ -19,11 +20,14 @@ namespace FilmClient.Pages.Medium
     public class MediumAPIService : BaseService<MediumDto>, IMediumService
     {
         private readonly IFilmService _filmService;
-
+        private readonly IDefaultService _defaultService;
         
-        public MediumAPIService(IFilmService fservice, IErrorService eservice) : base(eservice)
+        public MediumAPIService(IFilmService fservice,
+                                IDefaultService dservice,
+                                IErrorService eservice) : base(eservice)
         {
             _filmService = fservice;
+            _defaultService = dservice;
             _keyService = new KeyService();
             _controller = "Medium";            
         }
@@ -33,27 +37,23 @@ namespace FilmClient.Pages.Medium
             var result = new OperationResult(OperationStatus.OK);
             _action = "Add";
             var route = ComputeRoute();
-            var b = new BaseMediumDto(dto.Title, dto.Year, dto.MediumType, dto.Location);
+            var b = new BaseMediumDto(dto.Title, dto.Year, dto.MediumType, dto.Location, dto.GermanSubtitles);
             var jsonContent = new StringContent(JsonConvert.SerializeObject(b), Encoding.UTF8, "application/json");
             var response = await _client.PostAsync(route, jsonContent);
             result = await ResultFromResponseAsync(response);
             KeyedMediumDto addResult;
             if (result.Status == OperationStatus.OK)
             {
-                var key = _keyService.ConstructMediumKey(dto.Title, dto.Year, dto.MediumType);
-                _action = "GetByKey";
-                var route1 = ComputeRoute(key);
-                var response1 = await _client.GetAsync(route1);
-                var stringResponse = await response1.Content.ReadAsStringAsync();
-                addResult = JsonConvert.DeserializeObject<KeyedMediumDto>(stringResponse);
-                addResult.Key = _keyService.ConstructMediumKey(dto.Title, dto.Year, dto.MediumType);
+                addResult = (KeyedMediumDto)result.ResultValue.SingleOrDefault();
             }
             else
             {
                 addResult = null;
             }
-            result.ResultValue = new List<IKeyedDto>();
-            result.ResultValue.Add(addResult);
+            result.ResultValue = new List<IKeyedDto>
+            {
+                addResult
+            };            
             return result;
         }
 
@@ -77,7 +77,7 @@ namespace FilmClient.Pages.Medium
             var result = new List<MediumDto>();
             foreach (var k in rawMedia)
             {
-                var dto = new MediumDto(k.Title, k.Year, k.MediumType, k.Location);
+                var dto = new MediumDto(k.Title, k.Year, k.MediumType, k.Location, k.HasGermanSubtitles);
                 dto.Key = _keyService.ConstructMediumKey(dto.Title, dto.Year, dto.MediumType);
                 result.Add(dto);
             }
@@ -158,6 +158,15 @@ namespace FilmClient.Pages.Medium
                 result = new MediumDto(m.Title, m.Year, m.MediumType, m.Location, m.HasGermanSubtitles);
             }
             return result;
-        }       
+        }
+
+        public override async Task<MediumDto> GetLastEntryAsync()
+        {
+            MediumDto result = null;
+            var f = await _filmService.GetLastEntryAsync();
+            var d = _defaultService.GetCurrentDefaultValues();
+            
+            return result;
+        }
     }
 }

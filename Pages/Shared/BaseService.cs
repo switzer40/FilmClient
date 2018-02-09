@@ -134,5 +134,7 @@ namespace FilmClient.Pages.Shared
             var list = JsonConvert.DeserializeObject<List<IKeyedDto>>(stringResponse);
             return new OperationResult(OperationStatus.OK, list);
         }
+
+        public abstract Task<T> GetLastEntryAsync();        
     }
 }

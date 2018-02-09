@@ -29,9 +29,11 @@ namespace FilmClient.Pages.Shared
         protected int _totalRows;
         protected int _numberOfPages;
         protected int _pageNumber;
+        protected int _lastPage;
         public IErrorService ErrorService { get; }
         public int PageNumber => _pageNumber;
         public int NumberOfPages => _numberOfPages;
+        public int LastPage => _lastPage;
         public void InitializeCreateReasons()
         {
             CreateReasons = new Dictionary<int, string>();
@@ -92,6 +94,7 @@ namespace FilmClient.Pages.Shared
             var restRows = totalRows % PageSize;
             var rowQuotient = totalRows / PageSize;
             _numberOfPages = rowQuotient + 1;
+            _lastPage = (restRows == 0) ? rowQuotient - 1 : rowQuotient;
             var p = Request.Query["p"].FirstOrDefault();
             _pageNumber = int.TryParse(p, out int pageNumber) ? pageNumber : 0;
 

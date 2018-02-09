@@ -16,11 +16,13 @@ namespace FilmClient.Pages.Shared
         Task<List<T>> GetAllAsync(int pageIndex, int pageSize);
         OperationResult GetByKey(string key);
         Task<OperationResult> GetByKeyAsync(string key);
+        Task<T> GetLastEntryAsync();
         Task<OperationResult> UpdateAsync(T dto);
         OperationResult Add(T t);
         int Count();
         OperationResult Delete(string key);
-        List<T> GetAll(int pageIndex, int pageSize);        
+        List<T> GetAll(int pageIndex, int pageSize);
+        
         OperationResult Update(T dto);
     }
 }
