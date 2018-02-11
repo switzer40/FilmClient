@@ -6,6 +6,7 @@ using FilmAPI.Common.DTOs;
 using FilmAPI.Common.Interfaces;
 using FilmAPI.Common.Services;
 using FilmAPI.Common.Utilities;
+using FilmClient.Pages.Error;
 using FilmClient.Pages.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -55,7 +56,7 @@ namespace FilmClient.Pages.FilmPerson
                 return RedirectToPage("./index");
             }
 
-            return RedirectToPage("/Error");
+            return RedirectToPage("../Error/Index");
         }
     }
 }

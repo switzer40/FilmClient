@@ -8,6 +8,7 @@ using FilmAPI.Common.Interfaces;
 using FilmAPI.Common.Services;
 using FilmClient.Pages.Shared;
 using FilmAPI.Common.Utilities;
+using FilmClient.Pages.Error;
 
 namespace FilmClient.Pages.Person
 {

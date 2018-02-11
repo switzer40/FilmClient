@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FilmAPI.Common.Interfaces;
 using FilmAPI.Common.Utilities;
+using FilmClient.Pages.Error;
 using Newtonsoft.Json;
 
 namespace FilmClient.Pages.Shared

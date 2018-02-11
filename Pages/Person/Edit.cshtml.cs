@@ -5,6 +5,7 @@ using FilmClient.Pages.Shared;
 using FilmAPI.Common.Utilities;
 using FilmAPI.Common.DTOs;
 using System.Linq;
+using FilmClient.Pages.Error;
 
 namespace FilmClient.Pages.Person
 {

@@ -1,6 +1,7 @@
 ﻿using FilmAPI.Common.Interfaces;
 using FilmAPI.Common.Services;
 using FilmAPI.Common.Utilities;
+using FilmClient.Pages.Error;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

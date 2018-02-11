@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Net.NetworkInformation;
 using FilmAPI.Common.Utilities;
+using FilmClient.Pages.Error;
 using FilmClient.Pages.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

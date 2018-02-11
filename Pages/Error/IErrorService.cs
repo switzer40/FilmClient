@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FilmClient.Pages.Shared
+namespace FilmClient.Pages.Error
 {
     public interface IErrorService
     {

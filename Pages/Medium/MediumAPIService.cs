@@ -4,6 +4,7 @@ using FilmAPI.Common.Interfaces;
 using FilmAPI.Common.Services;
 using FilmAPI.Common.Utilities;
 using FilmClient.Pages.Default;
+using FilmClient.Pages.Error;
 using FilmClient.Pages.Film;
 using FilmClient.Pages.Person;
 using FilmClient.Pages.Shared;

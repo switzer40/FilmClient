@@ -3,6 +3,7 @@ using FilmAPI.Common.DTOs;
 using FilmAPI.Common.Interfaces;
 using FilmAPI.Common.Services;
 using FilmAPI.Common.Utilities;
+using FilmClient.Pages.Error;
 using FilmClient.Pages.FilmPerson;
 using FilmClient.Pages.Shared;
 using Newtonsoft.Json;

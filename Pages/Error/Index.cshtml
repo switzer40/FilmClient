@@ -1,0 +1,25 @@
+﻿@page
+@model FilmClient.Pages.Error.IndexModel
+@{
+    ViewData["Title"] = "An error has occurred";
+}
+
+<h2>@ViewData["Title"]</h2>
+<hr />
+<div class="container">
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Error.Status)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Error.Status.Name)
+        </dd>
+        <dt>
+            Reason:
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Error.Status.ReasonForFailure)
+        </dd>
+    </dl>
+</div>
+

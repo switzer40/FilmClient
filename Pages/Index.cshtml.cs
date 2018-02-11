@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FilmClient.Pages.Error;
 using FilmClient.Pages.Film;
 using FilmClient.Pages.FilmPerson;
 using FilmClient.Pages.Medium;

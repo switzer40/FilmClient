@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FilmAPI.Common.DTOs;
 using FilmAPI.Common.Services;
 using FilmAPI.Common.Utilities;
+using FilmClient.Pages.Error;
 using FilmClient.Pages.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

@@ -11,6 +11,7 @@ using FilmClient.Pages.FilmPerson;
 using FilmAPI.Common.Services;
 using FilmAPI.Common.Utilities;
 using FilmAPI.Common.DTOs;
+using FilmClient.Pages.Error;
 
 namespace FilmClient.Pages.Film
 {
