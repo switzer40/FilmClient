@@ -30,7 +30,7 @@ namespace FilmClient.Tests.Integrationests
         {
             var builder = new WebHostBuilder()
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseStartup<Startup>()
+                .UseStartup<DevelopmentStartup>()
                 .UseEnvironment("Testing");
 
             var server = new TestServer(builder);

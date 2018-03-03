@@ -10,6 +10,6 @@ namespace FilmClient.Pages.Film
 {
     public interface IFilmService : IService<FilmDto>
     {
-        Task<FilmDto> GetByTitleAndYearAsync(string title, short year);
+        Task<OperationResult<FilmDto>> GetByTitleAndYearAsync(string title, short year);
     }
 }

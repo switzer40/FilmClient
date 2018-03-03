@@ -22,7 +22,12 @@ namespace FilmClient.Pages.FilmPerson
         public FilmPersonDto FilmPersonToAdd { get; set; }
         public async Task<IActionResult> OnGetAsync()
         {
-            FilmPersonToAdd = await _service.GetLastEntryAsync();                                           
+            var res = await _service.GetLastEntryAsync();
+            if (res.Status == OperationStatus.OK)
+            {
+                var dto  =(KeyedFilmPersonDto)res.Value;
+                FilmPersonToAdd = new FilmPersonDto(dto.Title, dto.Year, dto.LastName, dto.Birthdate, dto.Role);
+            }
             return Page();
         }
         public async Task<IActionResult> OnPostAsync()

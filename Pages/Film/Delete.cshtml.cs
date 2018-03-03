@@ -46,7 +46,7 @@ namespace FilmClient.Pages.Film
             var s = res.Status;
             if (s == OperationStatus.OK)
             {
-                var f = (KeyedFilmDto)res.ResultValue.Single();
+                var f = (KeyedFilmDto)res.Value;
                 FilmToDelete.Title = f.Title;
                 FilmToDelete.Year = f.Year;
                 FilmToDelete.Length = f.Length;
@@ -65,8 +65,7 @@ namespace FilmClient.Pages.Film
                 return NotFound();
             }
 
-            var res = await _service.DeleteAsync(key);
-            var s = res.Status;
+            var s = await _service.DeleteAsync(key);
             if (s == OperationStatus.OK)
             {
                 return RedirectToPage("./index");

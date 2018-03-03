@@ -9,6 +9,8 @@ using FilmAPI.Common.Services;
 using FilmClient.Pages.Medium;
 using FilmClient.Pages.Shared;
 using FilmClient.Pages.Error;
+using FilmAPI.Common.DTOs;
+using FilmAPI.Common.Utilities;
 
 namespace FilmClient.Pages.Medium
 {
@@ -27,12 +29,18 @@ namespace FilmClient.Pages.Medium
         public async Task OnGetAsync()
         {
             await InitDataAsync();
-            var media = await _service.GetAllAsync(_pageNumber, PageSize);
-            foreach (var m in media)
+            var res = await _service.GetAllAsync(_pageNumber, PageSize);
+            if (res.Status == OperationStatus.OK)
             {
-                m.Key = _keyService.ConstructMediumKey(m.Title, m.Year, m.MediumType);
-                Media.Add(m);
+                List<IKeyedDto> media = res.Value;
+                foreach (var m in media)
+                {
+                    KeyedMediumDto dto = (KeyedMediumDto)m;
+                    var val = new MediumDto(dto.Title, dto.Year, dto.MediumType, dto.Location, dto.HasGermanSubtitles);
+                    Media.Add(val);
+                }
             }
+           
         }
 
         private async Task InitDataAsync()
@@ -41,8 +49,12 @@ namespace FilmClient.Pages.Medium
             {
                 return; //initialize only once
             }
-            _totalRows = await _service.CountAsync();
-            CalculateRowData(_totalRows);
+            var  res  = await _service.CountAsync();
+            if (res.Status == OperationStatus.OK)
+            {
+                _totalRows = res.Value;
+                CalculateRowData(_totalRows);
+            }            
         }        
     }
 }

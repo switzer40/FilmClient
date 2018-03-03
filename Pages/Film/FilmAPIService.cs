@@ -1,17 +1,12 @@
-﻿using FilmAPI.Common.Constants;
-using FilmAPI.Common.DTOs;
+﻿using FilmAPI.Common.DTOs;
 using FilmAPI.Common.Interfaces;
-using FilmAPI.Common.Services;
 using FilmAPI.Common.Utilities;
 using FilmClient.Pages.Error;
-using FilmClient.Pages.FilmPerson;
-using FilmClient.Pages.Medium;
 using FilmClient.Pages.Shared;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,116 +15,118 @@ namespace FilmClient.Pages.Film
 {
     public class FilmAPIService : BaseService<FilmDto>, IFilmService
     {
-        
-
         public FilmAPIService(IErrorService eservice) : base(eservice)
         {
             _controller = "Film";
-            _keyService = new KeyService();
         }
-        [ValidateFilmNotDuplicate]
-        public override async Task<OperationResult> AddAsync(FilmDto dto)
+        public override async Task<OperationResult<IKeyedDto>> AddAsync(FilmDto dto)
         {
-            var result = new OperationResult();
-            _action = "Add";
-            var route = ComputeRoute();
-            var b = new BaseFilmDto(dto.Title, dto.Year, dto.Length);
-            var jsonContent = new StringContent(JsonConvert.SerializeObject(b), Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync(route, jsonContent);
-            var retVal = new List<IKeyedDto>();
-            result = await ResultFromResponseAsync(response);
-            var status = result.Status;
-            if (status == OperationStatus.OK)
+            IKeyedDto retVal = default;
+            var stringResponse = await StringResponseForAddAsync(dto);
+            var res = JsonConvert.DeserializeObject<OperationResult<KeyedFilmDto>>(stringResponse);
+            var status = res.Status;
+            if (status == OKStatus)
             {
-                var val = (KeyedFilmDto)result.ResultValue.Single();
-                retVal.Add(val);                
+                retVal = res.Value;
             }
-            else
-            {
-                retVal = null;
-            }
-            return new OperationResult(status, retVal);
+            return new OperationResult<IKeyedDto>(status, retVal);
         }
 
-        public override async Task<int> CountAsync()
+        public override async Task<OperationResult<int>> CountAsync()
         {
-            _action = "Count";
-            var route = ComputeRoute();
-            var response = await _client.GetAsync(route);
-            var stringResponse = await response.Content.ReadAsStringAsync();
-            var films = JsonConvert.DeserializeObject<List<FilmDto>>(stringResponse);
-            return films.Count();
+            int count = 0;
+            var stringResponse = await StringResponseForCountAsync();
+            var res  = JsonConvert.DeserializeObject<OperationResult<int>>(stringResponse);
+            count = res.Value;
+            return new OperationResult<int>(res.Status, count);
         }
 
-        [ValidateFilmExists]
-        public override async Task<OperationResult> DeleteAsync(string key)
+
+
+        public override async Task<OperationStatus> DeleteAsync(string key)
         {
             _action = "Delete";
-            var route = ComputeRoute(key);
-            var response = await _client.DeleteAsync(route);
-            var data = _keyService.DeconstructFilmKey(key);
-            return await ResultFromResponseAsync(response);
-        }
-
-        public override async Task<List<FilmDto>> GetAllAsync(int pageIndex, int pageSize)
-        {
-            _action = "GetAll";
-            var queryString = $"?pageIndex={pageIndex}&pageSize={pageSize}";
-            var route = ComputeRoute() + queryString;
-            var response = await _client.GetAsync(route);
+            ComputeRoute(key);
+            var response = await _client.DeleteAsync(_route);
             var stringResponse = await response.Content.ReadAsStringAsync();
-            var films = JsonConvert.DeserializeObject<List<FilmDto>>(stringResponse);
-            foreach (var f in films)
-            {
-                f.Key = _keyService.ConstructFilmKey(f.Title, f.Year);
-            }
-            return films;
-        }
-        [ValidateFilmExists]
-        public override async Task<OperationResult> GetByKeyAsync(string key)
-        {
-            _action = "GetByKey";
-            var route = ComputeRoute(key);
-            var status = OperationStatus.OK;
-            var retVal = new List<IKeyedDto>();
-            var response = await _client.GetAsync(route);
-            var result = await ResultFromResponseAsync(response);
-            status = result.Status;
-            if (status == OperationStatus.OK)
-            {
-                var value = (KeyedFilmDto) result.ResultValue.Single();
-                value.Key = _keyService.ConstructFilmKey(value.Title, value.Year);
-                retVal.Add(value);
-            }
-            else
-            {
-                retVal = null;
-            }
-            return new OperationResult(status, retVal);
+            return JsonConvert.DeserializeObject<OperationStatus>(stringResponse);
         }
 
-        public async Task<FilmDto> GetByTitleAndYearAsync(string title, short year)
+        public override async Task<OperationResult<List<IKeyedDto>>> GetAbsolutelyAllAsync()
         {
-            FilmDto result = null;
+            List<IKeyedDto> retVal = default;
+            var stringResponse = await StringResponseForGetAbsolutelyAllAsync();
+            var result = JsonConvert.DeserializeObject<OperationResult<List<KeyedFilmDto>>>(stringResponse);
+            var status = result.Status;
+            if (status == OKStatus)
+            {
+                retVal = new List<IKeyedDto>();
+                var list = result.Value;
+                foreach (var k in list)
+                {
+                    retVal.Add((IKeyedDto)k);
+                }
+            }
+            return new OperationResult<List<IKeyedDto>>(status, retVal);
+        }
+
+        public override async Task<OperationResult<List<IKeyedDto>>> GetAllAsync(int pageIndex, int pageSize)
+        {
+            List<IKeyedDto> retVal = default;
+            var stringResponse = await StringResponseForGetAllAsync(pageIndex, pageSize);
+            var result = JsonConvert.DeserializeObject<OperationResult<List<IKeyedDto>>>(stringResponse);
+            var status = result.Status;
+            if (status == OKStatus)
+            {
+                retVal = new List<IKeyedDto>();
+                var list = result.Value
+                    .Skip(pageIndex * pageSize)
+                    .Take(pageSize).ToList();
+                foreach (var k in list)
+                {
+                    retVal.Add(k);
+                }
+            }
+            return new OperationResult<List<IKeyedDto>>(status, retVal);
+        }
+
+        public override async Task<OperationResult<IKeyedDto>> GetByKeyAsync(string key)
+        {
+            KeyedFilmDto retVal = default;
+            var stringResponse = await StringResponseForGetByKeyAsync(key);
+            var result = JsonConvert.DeserializeObject<OperationResult<IKeyedDto>>(stringResponse);
+            var status = result.Status;
+            if (status == OKStatus)
+            {
+                retVal = (KeyedFilmDto)result.Value;
+            }
+            return new OperationResult<IKeyedDto>(status, retVal);
+        }
+
+        public async Task<OperationResult<FilmDto>> GetByTitleAndYearAsync(string title, short year)
+        {
+            FilmDto retVal = default;
             var key = _keyService.ConstructFilmKey(title, year);
             var res = await GetByKeyAsync(key);
-            var s = res.Status;
-            if (s == OperationStatus.OK)
+            var status = res.Status;
+            if (status == OKStatus)
             {
-                var f = (KeyedFilmDto)res.ResultValue.Single();
-                result = new FilmDto(f.Title, f.Year, f.Length);
+                var k = (KeyedFilmDto)res.Value;
+                retVal = new FilmDto(k.Title, k.Year, k.Length);
             }
-            return result;
+            return new OperationResult<FilmDto>(status, retVal);
         }
 
-        public override async Task<FilmDto> GetLastEntryAsync()
+        public override OperationResult<IKeyedDto> GetLastEntry()
         {
-            _action = "Count";
-            var route = ComputeRoute();
-            var response = await _client.GetAsync(route);
-            var res = await ResultFromResponseAsync(response);
-            var f = (KeyedFilmDto) res.ResultValue.LastOrDefault();
-            return new FilmDto(f.Title, f.Year, f.Length);
+            KeyedFilmDto retVal = default;
+            var res = GetAbsolutelyAll();
+            var status = res.Status;
+            if (status == OKStatus)
+            {
+                retVal = (KeyedFilmDto)res.Value.LastOrDefault();
+            }
+            return new OperationResult<IKeyedDto>(status, retVal);
         }
 
         public override string KeyFrom(FilmDto dto)
@@ -137,32 +134,13 @@ namespace FilmClient.Pages.Film
             return _keyService.ConstructFilmKey(dto.Title, dto.Year);
         }
 
-        public override async Task<OperationResult> UpdateAsync(FilmDto dto)
+        protected override StringContent ContentFromDto(BaseDto dto)
         {
-            _action = "Edit";
-            var route = ComputeRoute();
-            var b = new BaseFilmDto(dto.Title, dto.Year, dto.Length);
-            var jsonContent = new StringContent(JsonConvert.SerializeObject(b), Encoding.UTF8, "application/json");
-            var response = await _client.PutAsync(route, jsonContent);
-            return await ResultFromResponseAsync(response);
-        }
-
-        protected override IBaseDto ArgFromDto(BaseDto dto)
-        {
-            var b = (FilmDto)dto;
-            return new BaseFilmDto(b.Title, b.Year);
-        }
-
-        protected override async Task<List<IKeyedDto>> ExtractListFromAsync(HttpResponseMessage response)
-        {
-            var result = new List<IKeyedDto>();
-            var stringResponse = await response.Content.ReadAsStringAsync();
-            var list = JsonConvert.DeserializeObject<List<KeyedFilmDto>>(stringResponse);
-            foreach (var item in list)
-            {
-                result.Add((IKeyedDto)item);
-            }
-            return result;
+            var f = (FilmDto)dto;
+            var b = new BaseFilmDto(f.Title, f.Year, f.Length);
+            return new StringContent(JsonConvert.SerializeObject(b),
+                                     Encoding.UTF8,
+                                     "application/json");
         }
     }
 }

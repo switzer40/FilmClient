@@ -1,4 +1,5 @@
 ﻿using FilmAPI.Common.Services;
+using FilmAPI.Common.Utilities;
 using FilmClient.Pages.Shared;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,6 @@ namespace FilmClient.Pages.Medium
 {
     public interface IMediumService : IService<MediumDto>
     {
-        Task<MediumDto> GetByTitleYearAndMediumTypeAsync(string title, short year, string mediumType);
+        Task<OperationResult<MediumDto>> GetByTitleYearAndMediumTypeAsync(string title, short year, string mediumType);
     }
 }

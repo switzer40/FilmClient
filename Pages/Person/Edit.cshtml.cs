@@ -32,7 +32,7 @@ namespace FilmClient.Pages.Person
             var s = res.Status;
             if (s == OperationStatus.OK)
             {
-                var p = (KeyedPersonDto)res.ResultValue.Single();
+                var p = (KeyedPersonDto)res.Value;
                 PersonToEdit = new PersonDto(p.LastName, p.Birthdate, p.FirstMidName);
                 return Page();
             }
@@ -43,8 +43,7 @@ namespace FilmClient.Pages.Person
         }
         public async Task<IActionResult> OnPostAsync()
         {
-            var res = await _service.UpdateAsync(PersonToEdit);
-            var s = res.Status;
+            var s = await _service.UpdateAsync(PersonToEdit);
             if (s == OperationStatus.OK)
             {
                 return RedirectToPage("./Index");

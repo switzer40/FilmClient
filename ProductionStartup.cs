@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,25 +19,18 @@ using FilmClient.Pages.Default;
 
 namespace FilmClient
 {
-    public class Startup
+    public class ProductionStartup
     {
-        public Startup(IConfiguration configuration)
+        public ProductionStartup(IConfiguration configuration)
         {
-            Configuration = configuration;            
+            Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
-       
-        public IServiceProvider ConfigureDevelopmentServices(IServiceCollection services)
-        {            
-            services.AddSingleton<IFilmService, FilmMockService>();
-            services.AddSingleton<IPersonService, PersonMockService>();
-            services.AddSingleton<IMediumService, MediumMockService>();
-            services.AddSingleton<IFilmPersonService, FilmPersonMockService>();
-           return ConfigureServices(services);
-        }
+
+        
         public IServiceProvider ConfigureProductionServices(IServiceCollection services)
-        {            
+        {
             services.AddScoped<IFilmService, FilmAPIService>();
             services.AddScoped<IPersonService, PersonAPIService>();
             services.AddScoped<IMediumService, MediumAPIService>();
@@ -48,7 +41,7 @@ namespace FilmClient
         {
             services.AddScoped<IDefaultService, DefaultService>();
             services.AddMvc();
-            return ConfigureIocServices(services);       
+            return ConfigureIocServices(services);
         }
 
         private IServiceProvider ConfigureIocServices(IServiceCollection services)
@@ -56,12 +49,12 @@ namespace FilmClient
             var container = new Container();
             container.Configure(config =>
             {
-            config.Scan(_ =>
-            {
-                _.AssemblyContainingType(typeof(Startup));
-                _.AssemblyContainingType(typeof(KeyService));
-                _.WithDefaultConventions();
-            });
+                config.Scan(_ =>
+                {
+                    _.AssemblyContainingType(typeof(ProductionStartup));
+                    _.AssemblyContainingType(typeof(KeyService));
+                    _.WithDefaultConventions();
+                });
                 config.For(typeof(IFilmService)).Add(typeof(FilmAPIService));
                 config.For(typeof(IFilmService)).Add(typeof(FilmMockService));
                 config.For(typeof(IFilmPersonService)).Add(typeof(FilmPersonAPIService));

@@ -36,7 +36,14 @@ namespace FilmClient.Pages.FilmPerson
         public async Task OnGetAsync()
         {
             await InitDataAsync();
-            var filmPeople = await _service.GetAllAsync(_pageNumber, PageSize);
+            var res = await _service.GetAllAsync(_pageNumber, PageSize);
+            List<IKeyedDto> list = (res.Status == OperationStatus.OK) ? res.Value : default;
+            List<KeyedFilmPersonDto> filmPeople = new List<KeyedFilmPersonDto>();
+            foreach (var item in list)
+            {
+                var val = (KeyedFilmPersonDto)item;
+                filmPeople.Add(val);
+            }
             foreach (var fp in filmPeople)
             {
                 PersonDto p = await GetPersonAsync(fp.LastName, fp.Birthdate);
@@ -56,7 +63,8 @@ namespace FilmClient.Pages.FilmPerson
             {
                 return; //initialize only once
             }
-            _totalRows = await _service.CountAsync();
+            var res = await _service.CountAsync();
+            _totalRows = (res.Status == OperationStatus.OK) ? res.Value : 0;
             CalculateRowData(_totalRows);
         }
         
@@ -69,7 +77,7 @@ namespace FilmClient.Pages.FilmPerson
 
             if (s == OperationStatus.OK)
             {
-                var p = (KeyedPersonDto) res.ResultValue.Single();
+                var p = (KeyedPersonDto) res.Value;
                 result = new PersonDto(p.LastName,p.Birthdate, p.FirstMidName);
             }
             return result;

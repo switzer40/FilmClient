@@ -33,7 +33,7 @@ namespace FilmClient.Pages.FilmPerson
             var s = res.Status;
             if (s == OperationStatus.OK)
             {
-                var fp = (KeyedFilmPersonDto)res.ResultValue.Single();
+                var fp = (KeyedFilmPersonDto)res.Value;
                 FilmPersonToDelete = new FilmPersonDto(fp.Title, fp.Year, fp.LastName, fp.Birthdate, fp.Role);
                 return Page();
             }
@@ -49,8 +49,7 @@ namespace FilmClient.Pages.FilmPerson
                 return NotFound();
             }
 
-            var res = await _service.DeleteAsync(key);
-            var s = res.Status;
+            var s = await _service.DeleteAsync(key);
             if (s == OperationStatus.OK)
             {
                 return RedirectToPage("./index");

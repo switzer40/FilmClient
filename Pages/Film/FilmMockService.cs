@@ -1,5 +1,6 @@
 ﻿using FilmAPI.Common.DTOs;
 using FilmAPI.Common.Interfaces;
+using FilmAPI.Common.Utilities;
 using FilmClient.Pages.Shared;
 using System;
 using System.Collections.Generic;
@@ -10,14 +11,13 @@ namespace FilmClient.Pages.Film
 {
     public class FilmMockService : BaseMockService<FilmDto>, IFilmService
     {
-        public FilmDto GetByTitleAndYear(string title, short year)
+        public async Task<OperationResult<FilmDto>> GetByTitleAndYearAsync(string title, short year)
         {
-            return _store.Values.ToList().Where(f => f.Title == title && f.Year == year).SingleOrDefault();
-        }
-
-        public async Task<FilmDto> GetByTitleAndYearAsync(string title, short year)
-        {
-            return await Task.Run(() => GetByTitleAndYear(title, year));
+            FilmDto retVal = default;
+            var key = _keyService.ConstructFilmKey(title, year);
+            var res = await GetByKeyAsync(key);
+            var dto = (KeyedFilmDto)res.Value;
+            return new OperationResult<FilmDto>(OKStatus, retVal);
         }
 
         public override string KeyFrom(FilmDto dto)
@@ -25,10 +25,16 @@ namespace FilmClient.Pages.Film
             return _keyService.ConstructFilmKey(dto.Title, dto.Year);
         }
 
-        protected override IKeyedDto RetrieveKeyedDtoFrom(FilmDto t)
+        protected override IKeyedDto RetrieveKeyedDto(FilmDto t)
         {
-            var key = KeyFrom(t);
-            return new KeyedFilmDto(t.Title, t.Year, t.Length, key);
+            return new KeyedFilmDto(t.Title, t.Year, t.Length, KeyFrom(t));
+        }
+
+        protected override void SpecificCopy(IKeyedDto target, FilmDto source)
+        {
+            KeyedFilmDto specificTarget = (KeyedFilmDto)target;
+            // Title and Year must be immutable.
+            specificTarget.Length = source.Length;
         }
     }
 }

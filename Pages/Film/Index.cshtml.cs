@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FilmAPI.Common.DTOs;
+using FilmAPI.Common.Interfaces;
+using FilmAPI.Common.Utilities;
 using FilmClient.Pages.Error;
 using FilmClient.Pages.Shared;
 using Microsoft.AspNetCore.Mvc;
@@ -26,12 +29,18 @@ namespace FilmClient.Pages.Film
         public async Task OnGetAsync()
         {
             await InitDataAsync();
-            var films = await _service.GetAllAsync(_pageNumber, PageSize);
+            var res = await _service.GetAllAsync(_pageNumber, PageSize);
+            List<IKeyedDto> films = default;
+            if (res.Status == OperationStatus.OK)
+            {
+                films = res.Value;
+            }
             Films = new List<FilmDto>();
             foreach (var f in films)
             {
-                f.Key = _keyService.ConstructFilmKey(f.Title, f.Year);
-                Films.Add(f);
+                var k = (KeyedFilmDto)f;
+                var val = new FilmDto(k.Title, k.Year, k.Length);
+                Films.Add(val);
             }
         }
 
@@ -41,8 +50,12 @@ namespace FilmClient.Pages.Film
             {
                 return; //initialize only once
             }
-            _totalRows = await _service.CountAsync();
-            CalculateRowData(_totalRows);
+            var res = await _service.CountAsync();
+            if (res.Status == OperationStatus.OK)
+            {
+                _totalRows = res.Value;
+                CalculateRowData(_totalRows);
+            }            
         }
     }
 }

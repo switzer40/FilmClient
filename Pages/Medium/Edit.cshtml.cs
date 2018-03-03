@@ -31,7 +31,7 @@ namespace FilmClient.Pages.Medium
             var s = res.Status;
             if (s == OperationStatus.OK)
             {
-                var m = (KeyedMediumDto)res.ResultValue.Single();
+                var m = (KeyedMediumDto)res.Value;
                 MediumToEdit = new MediumDto(m.Title, m.Year, m.MediumType, m.Location);
                 return Page();
             }
@@ -46,8 +46,7 @@ namespace FilmClient.Pages.Medium
             {
                 return Page();
             }
-            var res = await _service.UpdateAsync(MediumToEdit);
-            var s = res.Status;
+            var s = await _service.UpdateAsync(MediumToEdit);
             if (s == OperationStatus.OK)
             {
                 return RedirectToPage("Index");

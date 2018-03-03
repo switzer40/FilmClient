@@ -44,6 +44,7 @@ namespace FilmClient.Pages.Film
                 }
                 await next();
             }
+            
         }
     }
 }

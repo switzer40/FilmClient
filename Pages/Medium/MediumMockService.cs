@@ -1,7 +1,6 @@
 ﻿using FilmAPI.Common.DTOs;
 using FilmAPI.Common.Interfaces;
-using FilmAPI.Common.Services;
-using FilmClient.Pages.Film;
+using FilmAPI.Common.Utilities;
 using FilmClient.Pages.Shared;
 using System;
 using System.Collections.Generic;
@@ -11,21 +10,10 @@ using System.Threading.Tasks;
 namespace FilmClient.Pages.Medium
 {
     public class MediumMockService : BaseMockService<MediumDto>, IMediumService
-    {        
-        public MediumMockService() : base()
-        {            
-        }
-
-        public async Task<MediumDto> GetByTitleYearAndMediumTypeAsync(string title, short year, string mediumType)
+    {
+        public Task<OperationResult<MediumDto>> GetByTitleYearAndMediumTypeAsync(string title, short year, string mediumType)
         {
-            return await Task.Run(() => GetByTitleYearAndMediatype(title, year, mediumType));
-        }
-
-        private MediumDto GetByTitleYearAndMediatype(string title, short year, string mediumType)
-        {
-            var list = _store.Values.ToList();
-            var media = list.Where(m => m.Title == title && m.Year == year && m.MediumType == mediumType);
-            return media.Single();
+            throw new NotImplementedException();
         }
 
         public override string KeyFrom(MediumDto dto)
@@ -33,10 +21,18 @@ namespace FilmClient.Pages.Medium
             return _keyService.ConstructMediumKey(dto.Title, dto.Year, dto.MediumType);
         }
 
-        protected override IKeyedDto RetrieveKeyedDtoFrom(MediumDto t)
+        protected override IKeyedDto RetrieveKeyedDto(MediumDto t)
         {
-            var key = KeyFrom(t);
-            return new KeyedMediumDto(t.Title, t.Year, t.MediumType, t.Location, t.GermanSubtitles, key);
+            return new KeyedMediumDto(t.Title, t.Year, t.MediumType, t.Location, t.GermanSubtitles, KeyFrom(t));
+
+        }
+
+        protected override void SpecificCopy(IKeyedDto target, MediumDto source)
+        {
+            KeyedMediumDto specificTarget = (KeyedMediumDto)target;
+            // Title,Year and MediumType must be immutable.
+            specificTarget.Location = source.Location;
+            specificTarget.HasGermanSubtitles = source.GermanSubtitles;
         }
     }
 }

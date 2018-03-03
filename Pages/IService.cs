@@ -8,21 +8,23 @@ namespace FilmClient.Pages.Shared
 {
     public interface IService<T> where T : BaseDto
     {
-        Task<OperationResult> AddAsync(T dto);
-        
-        Task<int> CountAsync();
-        Task<OperationResult> DeleteAsync(string key);
+        Task<OperationResult<IKeyedDto>> AddAsync(T dto);        
+        Task<OperationResult<int>> CountAsync();
+        Task<OperationStatus> DeleteAsync(string key);
+        Task<string> KeyFromAsync(T dto);
+        Task<OperationResult<List<IKeyedDto>>> GetAbsolutelyAllAsync();
+        Task<OperationResult<List<IKeyedDto>>> GetAllAsync(int pageIndex, int pageSize);
+        OperationResult<IKeyedDto> GetByKey(string key);
+        Task<OperationResult<IKeyedDto>> GetByKeyAsync(string key);
+        Task<OperationResult<IKeyedDto>> GetLastEntryAsync();
+        Task<OperationStatus> UpdateAsync(T dto);
+        OperationResult<IKeyedDto> Add(T t);
+        OperationResult<int> Count();
+        OperationStatus Delete(string key);
+        OperationResult<List<IKeyedDto>> GetAbsolutelyAll();
+        OperationResult<List<IKeyedDto>> GetAll(int pageIndex, int pageSize);
+        OperationResult<IKeyedDto> GetLastEntry();
+        OperationStatus Update(T dto);
         string KeyFrom(T dto);
-        Task<List<T>> GetAllAsync(int pageIndex, int pageSize);
-        OperationResult GetByKey(string key);
-        Task<OperationResult> GetByKeyAsync(string key);
-        Task<T> GetLastEntryAsync();
-        Task<OperationResult> UpdateAsync(T dto);
-        OperationResult Add(T t);
-        int Count();
-        OperationResult Delete(string key);
-        List<T> GetAll(int pageIndex, int pageSize);
-        
-        OperationResult Update(T dto);
     }
 }

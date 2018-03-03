@@ -8,6 +8,9 @@ using FilmAPI.Common.Interfaces;
 using FilmAPI.Common.Services;
 using FilmClient.Pages.Shared;
 using FilmClient.Pages.Error;
+using FilmAPI.Common.Utilities;
+using FilmClient.Pages.FilmPerson;
+using FilmAPI.Common.DTOs;
 
 namespace FilmClient.Pages.Person
 {
@@ -26,13 +29,20 @@ namespace FilmClient.Pages.Person
         public async Task OnGetAsync()
         {
             await InitDataAsync();
-            var people = await _service.GetAllAsync(_pageNumber, PageSize);
-            foreach (var p in people)
+            var res = await _service.GetAllAsync(_pageNumber, PageSize);
+            List<IKeyedDto> people = default;
+            if (res.Status == OperationStatus.OK)
             {
-                p.ShortBirthdate = DateTime.Parse(p.BirthdateString).ToShortDateString();
-                p.Key = _keyService.ConstructPersonKey(p.LastName, p.BirthdateString);
-                People.Add(p);
-            }
+                people = res.Value;
+                foreach (var p in people)
+                {
+                    var k= (KeyedPersonDto)p;
+                    var val = new PersonDto(k.LastName, k.Birthdate, k.FirstMidName);
+                    val.ShortBirthdate = DateTime.Parse(k.Birthdate).ToShortDateString();
+                    val.Key = _keyService.ConstructPersonKey(k.LastName, k.Birthdate);
+                    People.Add(val);
+                }
+            }            
         }
 
         private async Task InitDataAsync()
@@ -41,8 +51,12 @@ namespace FilmClient.Pages.Person
             {
                 return; //initialize only once
             }
-            _totalRows = await _service.CountAsync();
-            CalculateRowData(_totalRows);
+            var res = await _service.CountAsync();
+            if (res.Status == OperationStatus.OK)
+            {
+                _totalRows = res.Value;
+                CalculateRowData(_totalRows);
+            }           
         }
     }
 }

@@ -62,7 +62,7 @@ namespace FilmClient.Pages.Person
             var s = res.Status;
             if (s == OperationStatus.OK)
             {
-                var p = (KeyedPersonDto)res.ResultValue.Single();
+                var p = (KeyedPersonDto)res.Value;
                 return new PersonDto(p.LastName, p.Birthdate, p.FirstMidName);
             }
             else
@@ -75,7 +75,7 @@ namespace FilmClient.Pages.Person
         {
             List<(string Title, short Year)> result = new List<(string Title, short Year)>();
             var res = await _filmPersonService.GetByLastNameBirthdateAndRoleAsync(LastName, Birthdate, role);            
-            foreach (var item in res.ResultValue)
+            foreach (var item in res.Value)
             {
                 var fp = (KeyedFilmPersonDto)item;
                 result.Add((fp.Title, fp.Year));

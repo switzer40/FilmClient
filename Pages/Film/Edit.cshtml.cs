@@ -31,7 +31,7 @@ namespace FilmClient.Pages.Film
             var s = res.Status;
             if (s == OperationStatus.OK)
             {
-                var f = (KeyedFilmDto) res.ResultValue.Single();
+                var f = (KeyedFilmDto) res.Value;
                 FilmToEdit.Title = f.Title;
                 FilmToEdit.Year = f.Year;
                 FilmToEdit.Length = f.Length;
@@ -50,13 +50,13 @@ namespace FilmClient.Pages.Film
             }
             var res = await _service.UpdateAsync(FilmToEdit);
             
-            if (res.Status == OperationStatus.OK)
+            if (res == OperationStatus.OK)
             {
                 return RedirectToPage("Index");
             }
             else
             {
-                return HandleError(res.Status, _action);
+                return HandleError(res, _action);
             }            
         }
     }

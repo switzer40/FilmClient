@@ -36,10 +36,10 @@ namespace FilmClient.Pages
         public int RelationCount { get; set; }
         public async Task OnGetAsync()
         {
-            FilmCount = await _filmService.CountAsync();
-            PersonCount = await _personService.CountAsync();
-            MediumCount = await _mediumService.CountAsync();
-            RelationCount = await _filmPersonService.CountAsync();
+            FilmCount = (await _filmService.CountAsync()).Value;
+            PersonCount = (await _personService.CountAsync()).Value;
+            MediumCount = (await _mediumService.CountAsync()).Value;
+            RelationCount = (await _filmPersonService.CountAsync()).Value;
         }
     }
 }

@@ -54,7 +54,7 @@ namespace FilmClient.Pages.Film
         {
             List<(string Name, string Birthdate)> result = new List<(string Name, string Birthdate)>();
             var res = await _filmPersonService.GetByTitleYearAndRoleAsync(title, year, role);
-            var filmPeople = res.ResultValue;
+            var filmPeople = res.Value;
             foreach (var item in filmPeople)
             {
                 var fp = (KeyedFilmPersonDto)item;

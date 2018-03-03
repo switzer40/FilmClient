@@ -36,7 +36,7 @@ namespace FilmClient.Pages.Person
             var s = res.Status;
             if (s == OperationStatus.OK)
             {
-                var p = (KeyedPersonDto)res.ResultValue.Single();
+                var p = (KeyedPersonDto)res.Value;
                 PersonToDelete = new PersonDto(p.LastName, p.Birthdate, p.FirstMidName);
                 var data = _keyService.DeconstructPersonKey(key);                
                 return Page();
@@ -49,8 +49,7 @@ namespace FilmClient.Pages.Person
         public async Task<IActionResult> OnPostAsync(string key)
         {
            
-            var res = await _service.DeleteAsync(key);
-            var s = res.Status;
+            var s = await _service.DeleteAsync(key);
             if (s== OperationStatus.OK)
             {
                 return RedirectToPage("../Index");

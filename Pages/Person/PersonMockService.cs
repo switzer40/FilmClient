@@ -1,5 +1,6 @@
 ﻿using FilmAPI.Common.DTOs;
 using FilmAPI.Common.Interfaces;
+using FilmAPI.Common.Utilities;
 using FilmClient.Pages.Shared;
 using System;
 using System.Collections.Generic;
@@ -10,14 +11,13 @@ namespace FilmClient.Pages.Person
 {
     public class PersonMockService : BaseMockService<PersonDto>, IPersonService
     {
-        public async Task<PersonDto> GetByLastNameAndBirthdateAsync(string lastName, string birthdate)
+        public async Task<OperationResult<PersonDto>> GetByLastNameAndBirthdateAsync(string lastName, string birthdate)
         {
-            return await Task.Run(() => GetByLastNameAndBirthdate(lastName, birthdate));
-        }
-
-        private PersonDto GetByLastNameAndBirthdate(string lastName, string birthdate)
-        {
-            return (_store.Values).Where(p => p.LastName == lastName && p.BirthdateString == birthdate).SingleOrDefault();
+            var key = _keyService.ConstructPersonKey(lastName, birthdate);
+            var res = await GetByKeyAsync(key);
+            var k = (KeyedPersonDto)res.Value;
+            var retVal = new PersonDto(k.LastName, k.Birthdate, k.FirstMidName);
+            return new OperationResult<PersonDto>(OKStatus, retVal);
         }
 
         public override string KeyFrom(PersonDto dto)
@@ -25,10 +25,16 @@ namespace FilmClient.Pages.Person
             return _keyService.ConstructPersonKey(dto.LastName, dto.BirthdateString);
         }
 
-        protected override IKeyedDto RetrieveKeyedDtoFrom(PersonDto t)
+        protected override IKeyedDto RetrieveKeyedDto(PersonDto t)
         {
-            var key = KeyFrom(t);
-            return new KeyedPersonDto(t.LastName, t.BirthdateString, t.FirstMidName, key);
+            return new KeyedPersonDto(t.LastName, t.BirthdateString, t.FirstMidName, KeyFrom(t));
+        }
+
+        protected override void SpecificCopy(IKeyedDto target, PersonDto source)
+        {
+            KeyedPersonDto specificTarget = (KeyedPersonDto)target;
+            // LastName and BirthdateString must be immutable.
+            specificTarget.FirstMidName = source.FirstMidName;
         }
     }
 }

@@ -33,7 +33,7 @@ namespace FilmClient.Pages.Medium
             var s = res.Status;
             if (s == OperationStatus.OK)
             {
-                var m = (KeyedMediumDto)res.ResultValue.Single();
+                var m = (KeyedMediumDto)res.Value;
                 MediumToDelete = new MediumDto(m.Title, m.Year, m.MediumType, m.Location, m.HasGermanSubtitles);
                 return Page();
             }
@@ -45,8 +45,7 @@ namespace FilmClient.Pages.Medium
         }
         public async Task<IActionResult> OnPostAsync(string key)
         {
-            var res = await _service.DeleteAsync(key);
-            var s = res.Status;
+            var s = await _service.DeleteAsync(key);
             if (s == OperationStatus.OK)
             {
                 return RedirectToPage("./index");

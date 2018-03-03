@@ -10,121 +10,133 @@ namespace FilmClient.Pages.Shared
 {
     public abstract class BaseMockService<T> : IService<T> where T : BaseDto
     {
-        protected Dictionary<string, T> _store;        
+        protected Dictionary<string, T> _store;
         protected IKeyService _keyService;
+        protected OperationStatus OKStatus = OperationStatus.OK;
         public BaseMockService()
         {
-            _store = new Dictionary<string, T>();            
+            _store = new Dictionary<string, T>();
             _keyService = new KeyService();
         }
-        public OperationResult Add(T t)
-        {;
+        public OperationResult<IKeyedDto> Add(T t)
+        {
+            IKeyedDto retVal = default;
             var key = KeyFrom(t);
             _store[key] = t;
-            OperationResult result = new OperationResult();
-            result.ResultValue.Add(RetrieveKeyedDtoFrom(t));
-            return result;
+            retVal = RetrieveKeyedDto(t);
+            return new OperationResult<IKeyedDto>(OKStatus, retVal);
         }
 
-        protected abstract IKeyedDto RetrieveKeyedDtoFrom(T t);
+        protected abstract IKeyedDto RetrieveKeyedDto(T t);
         
-        public async Task<OperationResult> AddAsync(T dto)
+
+        public async Task<OperationResult<IKeyedDto>> AddAsync(T dto)
         {
             return await Task.Run(() => Add(dto));
         }
-       
-        public int Count()
+
+        public OperationResult<int> Count()
         {
-            return (_store.Values).Count;
+            int count = _store.Values.Count;
+            return new OperationResult<int>(OKStatus, count);
         }
 
-        public async Task<int> CountAsync()
+        public async Task<OperationResult<int>> CountAsync()
         {
             return await Task.Run(() => Count());
         }
 
-        public OperationResult Delete(string key)
+        public OperationStatus Delete(string key)
         {
             _store.Remove(key);
-            return new OperationResult();
+            return OKStatus;
         }
 
-        public async Task<OperationResult> DeleteAsync(string key)
+        public async Task<OperationStatus> DeleteAsync(string key)
         {
             return await Task.Run(() => Delete(key));
         }
 
-        public List<T> GetAll(int pageIndex, int pageSize)
+        public OperationResult<List<IKeyedDto>> GetAbsolutelyAll()
         {
-            return (_store.Values
-                .Skip(pageIndex * pageSize)
-                .Take(pageSize)).ToList();
+            List<IKeyedDto> retVal = new List<IKeyedDto>();
+            foreach (var k in _store.Values)
+            {
+                var val = RetrieveKeyedDto(k);
+                retVal.Add(val);
+            }
+            return new OperationResult<List<IKeyedDto>>(OKStatus, retVal);
         }
 
-        public async Task<List<T>> GetAllAsync(int pageIndex, int pageSize)
+        public async Task<OperationResult<List<IKeyedDto>>> GetAbsolutelyAllAsync()
+        {
+            return await Task.Run(() => GetAbsolutelyAll());
+        }
+
+        public OperationResult<List<IKeyedDto>> GetAll(int pageIndex, int pageSize)
+        {
+            List<IKeyedDto> retVal = new List<IKeyedDto>();
+            var list = _store.Values
+                .Skip(pageIndex * pageSize)
+                .Take(pageSize).ToList();
+            foreach (var k in list)
+            {
+                var val = RetrieveKeyedDto(k);
+                retVal.Add(val);
+            }
+            return new OperationResult<List<IKeyedDto>>(OKStatus, retVal);
+        }
+
+        public async Task<OperationResult<List<IKeyedDto>>> GetAllAsync(int pageIndex, int pageSize)
         {
             return await Task.Run(() => GetAll(pageIndex, pageSize));
         }
 
-        public OperationResult GetByKey(string key)
+        public OperationResult<IKeyedDto> GetByKey(string key)
         {
-            var status = OperationStatus.OK;
-            var retVal = new List<IKeyedDto>();
-            if (_store.ContainsKey(key))
-            {                
-                retVal.Add(RetrieveKeyedDtoFrom(_store[key]));
-            }
-            else
-            {
-                status = OperationStatus.NotFound;
-                status.ReasonForFailure = "Unknown entity";
-            }
-            return new OperationResult(status, retVal);
-                
+            IKeyedDto retVal = (IKeyedDto) _store.Values
+                .Where(k => k.Key == key).FirstOrDefault();
+            return new OperationResult<IKeyedDto>(OKStatus, retVal);
         }
-        
-        public async Task<OperationResult> GetByKeyAsync(string key)
+
+        public async Task<OperationResult<IKeyedDto>> GetByKeyAsync(string key)
         {
-                return await Task.Run(() => GetByKey(key));
+            return await Task.Run(() => GetByKey(key));
+        }
+
+        public OperationResult<IKeyedDto> GetLastEntry()
+        {
+            IKeyedDto retVal = (IKeyedDto)_store.Values
+                .LastOrDefault();
+            return new OperationResult<IKeyedDto>(OKStatus, retVal);
+        }
+
+        public async Task<OperationResult<IKeyedDto>> GetLastEntryAsync()
+        {
+            return await Task.Run(() => GetLastEntry());
         }
 
         public abstract string KeyFrom(T dto);
         
 
-        public OperationResult Update(T dto)
+        public async Task<string> KeyFromAsync(T dto)
         {
-            var key = dto.Key;           
-            var status = OperationStatus.OK;
-            var val = new List<IKeyedDto>();
-             if (string.IsNullOrEmpty(key))
-            {
-                status = OperationStatus.BadRequest;
-                status.ReasonForFailure = "Malformed key";
-                val = null;
-            }
-            if (_store.ContainsKey(key))
-            {
-                var storedEntity = _store[key];
-                storedEntity.Copy(dto);                
-                val.Add((IKeyedDto)storedEntity);                
-            }
-            else
-            {
-                status = OperationStatus.NotFound;
-                status.ReasonForFailure = "Unknown Entity";
-                val = null;
-            }
-            return new OperationResult(status, val);
+            return await Task.Run(() => KeyFrom(dto));
         }
 
-        public async Task<OperationResult> UpdateAsync(T dto)
+        public OperationStatus Update(T dto)
+        {
+            var storedEntity = RetrieveKeyedDto(_store[dto.Key]);
+            SpecificCopy(storedEntity, dto);
+            return OKStatus;
+        }
+
+        protected abstract void SpecificCopy(IKeyedDto target, T source);
+       
+
+        public async Task<OperationStatus> UpdateAsync(T dto)
         {
             return await Task.Run(() => Update(dto));
-        }
-
-        public Task<T> GetLastEntryAsync()
-        {
-            throw new NotImplementedException();
         }
     }
 }

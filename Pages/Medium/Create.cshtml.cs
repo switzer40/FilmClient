@@ -34,7 +34,8 @@ namespace FilmClient.Pages.Medium
         }
         public async Task<IActionResult> OnGetAsync()
         {
-            var f = await _filmService.GetLastEntryAsync();            
+            var res = await _filmService.GetLastEntryAsync();
+            KeyedFilmDto f = (res.Status == OperationStatus.OK) ? (KeyedFilmDto)res.Value : default;
             var d = _defaultervice.GetCurrentDefaultValues();
             if (f != null)
             {
@@ -42,10 +43,12 @@ namespace FilmClient.Pages.Medium
             }
             else
             {
-                MediumToAdd = new MediumDto();
-                MediumToAdd.MediumType = d.MediumType;
-                MediumToAdd.Location = d.Location;
-                MediumToAdd.GermanSubtitles = true;
+                MediumToAdd = new MediumDto
+                {
+                    MediumType = d.MediumType,
+                    Location = d.Location,
+                    GermanSubtitles = true
+                };
             }
             
             return Page();
