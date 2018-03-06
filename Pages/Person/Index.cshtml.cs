@@ -17,33 +17,32 @@ namespace FilmClient.Pages.Person
     public class IndexModel : BasePageModel
     {
         private readonly IPersonService _service;
-        
+
         public IndexModel(IPersonService service, IErrorService eservice) : base(eservice)
         {
             _service = service;
             _keyService = new KeyService();
-            People = new List<PersonDto>();
             _totalRows = 0;
         }
-        public List<PersonDto> People { get; set; }
-        public async Task OnGetAsync()
+        public PaginatedList<PersonDto> People { get; set; }
+        public async Task OnGetAsync(int? pageIndex =0)
         {
             await InitDataAsync();
-            var res = await _service.GetAllAsync(_pageNumber, PageSize);
-            List<IKeyedDto> people = default;
+            var items = new List<PersonDto>();
+            var res = await _service.GetAllAsync(pageIndex.Value, PageSize);
             if (res.Status == OperationStatus.OK)
             {
-                people = res.Value;
-                foreach (var p in people)
+                var rawList = res.Value;
+                foreach (var k in rawList)
                 {
-                    var k= (KeyedPersonDto)p;
-                    var val = new PersonDto(k.LastName, k.Birthdate, k.FirstMidName);
-                    val.ShortBirthdate = DateTime.Parse(k.Birthdate).ToShortDateString();
-                    val.Key = _keyService.ConstructPersonKey(k.LastName, k.Birthdate);
-                    People.Add(val);
+                    var p = (KeyedPersonDto)k;
+                    var dto = new PersonDto(p.LastName, p.Birthdate, p.FirstMidName);
+                    items.Add(dto);
                 }
-            }            
+            }
+            People = new PaginatedList<PersonDto>(items, _totalRows, pageIndex.Value, PageSize);
         }
+    
 
         private async Task InitDataAsync()
         {

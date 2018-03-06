@@ -10,16 +10,16 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.People[0].FirstMidName)
+                @Html.DisplayNameFor(model => model.People.TypicalEntry.FirstMidName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.People[0].LastName)
+                @Html.DisplayNameFor(model => model.People.TypicalEntry.LastName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.People[0].ShortBirthdate)
+                @Html.DisplayNameFor(model => model.People.TypicalEntry.ShortBirthdate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.People[0].Key)
+                @Html.DisplayNameFor(model => model.People.TypicalEntry.Key)
             </th>
         </tr>
     </thead>
@@ -48,25 +48,29 @@
         }
     </tbody>
 </table>
-<div class="row">
-<div class="row">
-    <div class="col-md-1">
-        <a href="?p=0">First</a>
-    </div>
-    @if (Model.PageNumber > 0)
-    {
-        <div class="col-md-1">
-            <a href="?p=@(Model.PageNumber-1)">Previous</a>
-        </div>
-    }
-    @if (Model.PageNumber < Model.NumberOfPages - 1)
-    {
-        <div class="col-md-1">
-            <a href="?p=@(Model.PageNumber+1)">Next</a>
-        </div>
-    }
-    <div class="col-md-1">
-        <a href="?p=@(Model.LastPage)">Last</a>
-    </div>
-</div>
-
+@{
+    var prevDisabled = !Model.People.HasPrevious() ? "disabled" : "";
+    var nextDisabled = !Model.People.HasNext() ? "disabled" : "";
+}
+<a asp-page="./Index"
+   asp-route-PageIndex="0"
+   class="btn btn-default">
+    First
+</a>
+<a asp-page="./Index"
+   asp-route-PageIndex="@(Model.People.PageIndex- 1)"
+   class="btn btn-default @prevDisabled">
+    Previous
+</a>
+Page:
+@Model.People.PageIndex
+<a  asp-page="./Index"
+   asp-route-PageIndex="@(Model.People.PageIndex + 1)"
+   class="btn btn-default @nextDisabled">
+    Next
+</a>
+<a asp-page="./Index"
+   asp-route-PageIndex="@Model.People.LastPage"
+   class="btn btn-default">
+    Last
+</a>

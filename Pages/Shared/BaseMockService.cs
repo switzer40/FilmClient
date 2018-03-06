@@ -28,7 +28,7 @@ namespace FilmClient.Pages.Shared
         }
 
         protected abstract IKeyedDto RetrieveKeyedDto(T t);
-        
+
 
         public async Task<OperationResult<IKeyedDto>> AddAsync(T dto)
         {
@@ -94,7 +94,7 @@ namespace FilmClient.Pages.Shared
 
         public OperationResult<IKeyedDto> GetByKey(string key)
         {
-            IKeyedDto retVal = (IKeyedDto) _store.Values
+            IKeyedDto retVal = (IKeyedDto)_store.Values
                 .Where(k => k.Key == key).FirstOrDefault();
             return new OperationResult<IKeyedDto>(OKStatus, retVal);
         }
@@ -117,7 +117,7 @@ namespace FilmClient.Pages.Shared
         }
 
         public abstract string KeyFrom(T dto);
-        
+
 
         public async Task<string> KeyFromAsync(T dto)
         {
@@ -132,11 +132,15 @@ namespace FilmClient.Pages.Shared
         }
 
         protected abstract void SpecificCopy(IKeyedDto target, T source);
-       
+
 
         public async Task<OperationStatus> UpdateAsync(T dto)
         {
             return await Task.Run(() => Update(dto));
         }
+
+        public abstract Task<PaginatedList<T>> CurrentPageAsync(int pageIndex, int pageSize);
+
+        public abstract void SetController(string controller);        
     }
 }

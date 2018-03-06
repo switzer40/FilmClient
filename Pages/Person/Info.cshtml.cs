@@ -23,6 +23,7 @@ namespace FilmClient.Pages.Person
                          IFilmPersonService fpservice,
                          IErrorService eservice) : base(eservice)
         {
+            pservice.SetController("Person");
             _personService = pservice;
             _filmPersonService = fpservice;
             _keyService = new KeyService();
@@ -46,9 +47,9 @@ namespace FilmClient.Pages.Person
         {
             PersonDto p = await GetPersonAsync(key);
             ContributorName = p.FullName;
-            var data = _keyService.DeconstructPersonKey(key);
-            LastName = data.lastName;
-            Birthdate = data.birthdate;
+            var (lastName, birthdate) = _keyService.DeconstructPersonKey(key);
+            LastName = lastName;
+            Birthdate = birthdate;
             AsActor = await ExtractContributionsAsync(FilmConstants.Role_Actor);
             AsComposer = await ExtractContributionsAsync(FilmConstants.Role_Composer);
             AsDirector = await ExtractContributionsAsync(FilmConstants.Role_Director);

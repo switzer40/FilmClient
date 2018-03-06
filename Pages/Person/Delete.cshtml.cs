@@ -29,7 +29,6 @@ namespace FilmClient.Pages.Person
         }
         public PersonDto PersonToDelete { get; set; }
         
-        public bool DoDeleteRelations { get; set; }
         public async Task<IActionResult> OnGetAsync(string key)
         {
             var res = await _service.GetByKeyAsync(key);
@@ -38,7 +37,6 @@ namespace FilmClient.Pages.Person
             {
                 var p = (KeyedPersonDto)res.Value;
                 PersonToDelete = new PersonDto(p.LastName, p.Birthdate, p.FirstMidName);
-                var data = _keyService.DeconstructPersonKey(key);                
                 return Page();
             }
             else

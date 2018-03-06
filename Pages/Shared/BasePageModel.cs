@@ -25,6 +25,7 @@ namespace FilmClient.Pages.Shared
         protected Dictionary<int, string> DeleteReasons;
         protected Dictionary<int, string> EditReasons;       
         protected string _action;
+        protected string _controller;
         protected string _mainProperty;
         protected IKeyService _keyService;
         protected int _totalRows;
@@ -60,7 +61,7 @@ namespace FilmClient.Pages.Shared
             ErrorStatus = status;
             if (status.ReasonForFailure == "")
             {
-                ErrorStatus.ReasonForFailure = getReason(status, _action);
+                ErrorStatus.ReasonForFailure = GetReason(status, _action);
             }
             switch (status.Name)
             {
@@ -76,7 +77,7 @@ namespace FilmClient.Pages.Shared
             return result;
         }
 
-        private string getReason(OperationStatus status, string action)
+        private string GetReason(OperationStatus status, string action)
         {
             switch (action)
             {
@@ -92,12 +93,7 @@ namespace FilmClient.Pages.Shared
         }
         protected void CalculateRowData(int totalRows)
         {
-            var restRows = totalRows % PageSize;
-            var rowQuotient = totalRows / PageSize;
-            _numberOfPages = rowQuotient + 1;
-            _lastPage = (restRows == 0) ? rowQuotient - 1 : rowQuotient;
-            var p = Request.Query["p"].FirstOrDefault();
-            _pageNumber = int.TryParse(p, out int pageNumber) ? pageNumber : 0;
+            _lastPage = (int)Math.Floor(totalRows / (double)PageSize);
 
         }
     }

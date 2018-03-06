@@ -25,38 +25,36 @@ namespace FilmClient.Pages.FilmPerson
             _service = service;
             _personService = pservice;
             _keyService = new KeyService();
-            FilmPeople = new List<FilmPersonModel>();
             _totalRows = 0;
             
         }
-        [BindProperty]
-        public List<FilmPersonModel> FilmPeople { get; set; }
+        
+        public PaginatedList<FilmPersonModel> FilmPeople { get; set; }
 
 
-        public async Task OnGetAsync()
+        public async Task OnGetAsync(int? pageIndex = 0)
         {
             await InitDataAsync();
-            var res = await _service.GetAllAsync(_pageNumber, PageSize);
-            List<IKeyedDto> list = (res.Status == OperationStatus.OK) ? res.Value : default;
-            List<KeyedFilmPersonDto> filmPeople = new List<KeyedFilmPersonDto>();
-            foreach (var item in list)
+            var items = new List<FilmPersonModel>();
+            var res = await _service.GetAllAsync(pageIndex.Value, PageSize);
+            if (res.Status == OperationStatus.OK)
             {
-                var val = (KeyedFilmPersonDto)item;
-                filmPeople.Add(val);
+                var rawList = res.Value;
+                foreach (var k in rawList)
+                {
+                    var fp = (KeyedFilmPersonDto)k;
+                    var p = await GetPersonAsync(fp.LastName, fp.Birthdate);
+                    var model = new FilmPersonModel(fp.Title,
+                                                    fp.Year, fp.LastName,
+                                                    p.FirstMidName,
+                                                    fp.Birthdate,
+                                                    fp.Role);
+                    items.Add(model);
+                }
             }
-            foreach (var fp in filmPeople)
-            {
-                PersonDto p = await GetPersonAsync(fp.LastName, fp.Birthdate);
-                p.FullName = $"{p.FirstMidName} {p.LastName}";                
-                var model = new FilmPersonModel(fp.Title, fp.Year, p.LastName, p.FirstMidName, fp.Birthdate, fp.Role);                
-                model.Key = _keyService.ConstructFilmPersonKey(fp.Title,
-                                                               fp.Year,
-                                                               fp.LastName,
-                                                               fp.Birthdate,
-                                                               fp.Role);
-                FilmPeople.Add(model);
-            }
+            FilmPeople = new PaginatedList<FilmPersonModel>(items, _totalRows, pageIndex.Value, PageSize);
         }
+
         private async Task InitDataAsync()
         {
             if (_totalRows > 0)

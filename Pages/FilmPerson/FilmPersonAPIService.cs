@@ -17,7 +17,7 @@ namespace FilmClient.Pages.FilmPerson
     {
         public FilmPersonAPIService(IErrorService eservice) : base(eservice)
         {
-            _controller = "FilmPerson";
+            SetController("FilmPerson");
         }
         public override async Task<OperationResult<IKeyedDto>> AddAsync(FilmPersonDto dto)
         {
@@ -76,7 +76,7 @@ namespace FilmClient.Pages.FilmPerson
         {
             List<IKeyedDto> retVal = default;
             var stringResponse = await StringResponseForGetAllAsync(pageIndex, pageSize);
-            var result = JsonConvert.DeserializeObject<OperationResult<List<IKeyedDto>>>(stringResponse);
+            var result = JsonConvert.DeserializeObject<OperationResult<List<KeyedFilmPersonDto>>>(stringResponse);
             var status = result.Status;
             if (status == OKStatus)
             {
@@ -94,7 +94,7 @@ namespace FilmClient.Pages.FilmPerson
         {
             KeyedFilmPersonDto retVal = default;
             var stringResponse = await StringResponseForGetByKeyAsync(key);
-            var result = JsonConvert.DeserializeObject<OperationResult<IKeyedDto>>(stringResponse);
+            var result = JsonConvert.DeserializeObject<OperationResult<KeyedFilmPersonDto>>(stringResponse);
             var status = result.Status;
             if (status == OKStatus)
             {

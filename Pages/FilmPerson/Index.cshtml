@@ -10,22 +10,22 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.FilmPeople[0].Title)
+                @Html.DisplayNameFor(model => model.FilmPeople.TypicalEntry.Title)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FilmPeople[0].Year)
+                @Html.DisplayNameFor(model => model.FilmPeople.TypicalEntry.Year)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FilmPeople[0].Contributor)
+                @Html.DisplayNameFor(model => model.FilmPeople.TypicalEntry.Contributor)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FilmPeople[0].ContributorBirthdate)
+                @Html.DisplayNameFor(model => model.FilmPeople.TypicalEntry.ContributorBirthdate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FilmPeople[0].Role)
+                @Html.DisplayNameFor(model => model.FilmPeople.TypicalEntry.Role)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FilmPeople[0].Key)
+                @Html.DisplayNameFor(model => model.FilmPeople.TypicalEntry.Key)
             </th>
         </tr>
     </thead>
@@ -59,23 +59,27 @@
         }
     </tbody>
 </table>
-<div class="row">
-    <div class="col-md-1">
-        <a href="?p=0">First</a>
-    </div>
-    @if (Model.PageNumber > 0)
-    {
-        <div class="col-md-1">
-            <a href="?p=@(Model.PageNumber-1)">Previous</a>
-        </div>
-    }
-    @if (Model.PageNumber < Model.NumberOfPages - 1)
-    {
-        <div class="col-md-1">
-            <a href="?p=@(Model.PageNumber+1)">Next</a>
-        </div>
-    }
-    <div class="col-md-1">
-        <a href="?p=@(Model.LastPage)">Last</a>
-    </div>
-</div>
+@{
+    var prevDisabled = !Model.FilmPeople.HasPrevious() ? "disabled" : "";
+    var nextDisabled = !Model.FilmPeople.HasNext() ? "disabled" : "";
+}
+<a asp-page="./Index"
+   asp-route-PageIndex="0"
+   class="btn btn-default">
+    First
+</a>
+<a asp-page="./Index"
+   asp-route-PageIndex="@(Model.FilmPeople.PageIndex- 1)"
+   class="btn btn-default @prevDisabled">
+    Previous
+</a>
+<a asp-page="./Index"
+   asp-route-PageIndex="@(Model.FilmPeople.PageIndex + 1)"
+   class="btn btn-default @nextDisabled">
+    Next
+</a>
+<a asp-page="./Index"
+   asp-route-PageIndex="@Model.FilmPeople.LastPage"
+   class="btn btn-default">
+    Last
+</a>

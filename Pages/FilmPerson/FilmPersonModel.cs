@@ -1,9 +1,11 @@
-﻿using FilmAPI.Common.Services;
+﻿using FilmAPI.Common.Interfaces;
+using FilmAPI.Common.Services;
+using FilmClient.Pages.Shared;
 using System;
 
 namespace FilmClient.Pages.FilmPerson
 {
-    public class FilmPersonModel
+    public class FilmPersonModel : BaseDto
     {
         public FilmPersonModel()
         {
@@ -36,6 +38,35 @@ namespace FilmClient.Pages.FilmPerson
         public string ContributorBirthdate { get; set; }
         public string Contributor { get; internal set; }
         public string Role { get; internal set; }
-        public string Key { get; internal set; }
+
+        public override void Copy(IBaseDto dto)
+        {
+            if (dto.GetType() == typeof(FilmPersonModel))
+            {
+                var that = (FilmPersonModel)dto;
+                Title = that.Title;
+                Year = that.Year;
+                LastName = that.LastName;
+                ContributorBirthdate = that.ContributorBirthdate;
+                Contributor = that.Contributor;
+                Role = that.Role;
+            }
+        }
+
+        public override bool Equals(IBaseDto dto)
+        {
+            bool result = false;
+            if (dto.GetType() == typeof(FilmPersonModel))
+            {
+                var that = (FilmPersonModel)dto;
+                result = (Title == that.Title) &&
+                         (Year == that.Year) &&
+                         (LastName == that.LastName) &&
+                         (Contributor == that.Contributor) &&
+                         (ContributorBirthdate == that.ContributorBirthdate) &&
+                         (Role == that.Role);
+            }
+            return result;
+        }
     }
 }

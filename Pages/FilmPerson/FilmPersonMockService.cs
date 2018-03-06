@@ -10,6 +10,11 @@ namespace FilmClient.Pages.FilmPerson
 {
     public class FilmPersonMockService : BaseMockService<FilmPersonDto>, IFilmPersonService
     {
+        public override Task<PaginatedList<FilmPersonDto>> CurrentPageAsync(int pageIndex, int pageSize)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<OperationResult<List<IKeyedDto>>> GetByLastNameBirthdateAndRoleAsync(string lastName, string birthdate, string role)
         {
             throw new NotImplementedException();
@@ -21,6 +26,11 @@ namespace FilmClient.Pages.FilmPerson
         }
 
         public override string KeyFrom(FilmPersonDto dto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SetController(string controller)
         {
             throw new NotImplementedException();
         }

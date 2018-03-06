@@ -17,7 +17,7 @@ namespace FilmClient.Pages.Film
     {
         public FilmAPIService(IErrorService eservice) : base(eservice)
         {
-            _controller = "Film";
+            SetController("Film");
         }
         public override async Task<OperationResult<IKeyedDto>> AddAsync(FilmDto dto)
         {
@@ -40,9 +40,7 @@ namespace FilmClient.Pages.Film
             count = res.Value;
             return new OperationResult<int>(res.Status, count);
         }
-
-
-
+        
         public override async Task<OperationStatus> DeleteAsync(string key)
         {
             _action = "Delete";
@@ -74,14 +72,12 @@ namespace FilmClient.Pages.Film
         {
             List<IKeyedDto> retVal = default;
             var stringResponse = await StringResponseForGetAllAsync(pageIndex, pageSize);
-            var result = JsonConvert.DeserializeObject<OperationResult<List<IKeyedDto>>>(stringResponse);
+            var result = JsonConvert.DeserializeObject<OperationResult<List<KeyedFilmDto>>>(stringResponse);
             var status = result.Status;
             if (status == OKStatus)
             {
                 retVal = new List<IKeyedDto>();
-                var list = result.Value
-                    .Skip(pageIndex * pageSize)
-                    .Take(pageSize).ToList();
+                var list = result.Value.ToList();                    
                 foreach (var k in list)
                 {
                     retVal.Add(k);

@@ -25,6 +25,10 @@ namespace FilmClient.Pages.Shared
             _errorService = eservice;
             _keyService = new KeyService();
         }
+        public void SetController(string controller)
+        {
+            _controller = controller;
+        }
         protected HttpClient GetClient()
         {
             var client = new HttpClient
@@ -43,7 +47,7 @@ namespace FilmClient.Pages.Shared
         }
 
         public abstract Task<OperationResult<IKeyedDto>> AddAsync(T dto);
-        
+
 
         public OperationResult<int> Count()
         {
@@ -52,7 +56,7 @@ namespace FilmClient.Pages.Shared
         }
 
         public abstract Task<OperationResult<int>> CountAsync();
-        
+
 
         public OperationStatus Delete(string key)
         {
@@ -61,17 +65,17 @@ namespace FilmClient.Pages.Shared
         }
 
         public abstract Task<OperationStatus> DeleteAsync(string key);
-        
+
 
         public OperationResult<List<IKeyedDto>> GetAbsolutelyAll()
         {
             // Not neded here
             var list = new List<IKeyedDto>();
-            return new OperationResult<List <IKeyedDto>>(OKStatus, list);
+            return new OperationResult<List<IKeyedDto>>(OKStatus, list);
         }
 
         public abstract Task<OperationResult<List<IKeyedDto>>> GetAbsolutelyAllAsync();
-       
+
 
         public OperationResult<List<IKeyedDto>> GetAll(int pageIndex, int pageSize)
         {
@@ -80,7 +84,7 @@ namespace FilmClient.Pages.Shared
         }
 
         public abstract Task<OperationResult<List<IKeyedDto>>> GetAllAsync(int pageIndex, int pageSize);
-        
+
 
         public OperationResult<IKeyedDto> GetByKey(string key)
         {
@@ -89,14 +93,14 @@ namespace FilmClient.Pages.Shared
         }
 
         public abstract Task<OperationResult<IKeyedDto>> GetByKeyAsync(string key);
-        
+
         public async Task<string> KeyFromAsync(T dto)
         {
             return await Task.Run(() => KeyFrom(dto));
         }
 
         public abstract string KeyFrom(T dto);
-        
+
 
         public OperationStatus Update(T dto)
         {
@@ -110,7 +114,7 @@ namespace FilmClient.Pages.Shared
 
         public async Task<OperationResult<IKeyedDto>> GetLastEntryAsync()
         {
-            return await Task.Run(() => GetLastEntry());   
+            return await Task.Run(() => GetLastEntry());
         }
 
         public abstract OperationResult<IKeyedDto> GetLastEntry();

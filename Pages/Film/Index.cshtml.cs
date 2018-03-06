@@ -23,25 +23,26 @@ namespace FilmClient.Pages.Film
             _service = service;
             _totalRows = 0;
         }
+        
+        public PaginatedList<FilmDto> Films { get; set; }
 
-        public IList<FilmDto> Films { get; set; }
-
-        public async Task OnGetAsync()
+        public async Task OnGetAsync(int? pageIndex = 0)
         {
             await InitDataAsync();
-            var res = await _service.GetAllAsync(_pageNumber, PageSize);
-            List<IKeyedDto> films = default;
+            var items = new List<FilmDto>();
+            var res = await _service.GetAllAsync(pageIndex.Value, PageSize);
             if (res.Status == OperationStatus.OK)
             {
-                films = res.Value;
+                var rawList = res.Value;
+                foreach (var k in rawList)
+                {
+                    var f = (KeyedFilmDto)k;
+                    var dto = new FilmDto(f.Title, f.Year, f.Length);
+                    items.Add(dto);
+                }
             }
-            Films = new List<FilmDto>();
-            foreach (var f in films)
-            {
-                var k = (KeyedFilmDto)f;
-                var val = new FilmDto(k.Title, k.Year, k.Length);
-                Films.Add(val);
-            }
+            Films = new PaginatedList<FilmDto>(items, _totalRows, pageIndex.Value, PageSize);
+            Films.PageIndex = pageIndex.Value;
         }
 
         private async Task InitDataAsync()

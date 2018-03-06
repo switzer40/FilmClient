@@ -20,27 +20,31 @@ namespace FilmClient.Pages.Medium
         public IndexModel(IMediumService service, IErrorService eservice) : base(eservice)
         {
             _service = service;
-            _keyService = new KeyService();
-            Media = new List<MediumDto>();
+            _keyService = new KeyService();            
             _totalRows = 0;            
         }
         [BindProperty]
-        public List<MediumDto> Media { get; set; }
-        public async Task OnGetAsync()
+        public PaginatedList<MediumDto> Media { get; set; }
+        public async Task OnGetAsync(int? pageIndex = 0)
         {
             await InitDataAsync();
-            var res = await _service.GetAllAsync(_pageNumber, PageSize);
+            var items = new List<MediumDto>();
+            var res = await _service.GetAllAsync(pageIndex.Value, PageSize);
             if (res.Status == OperationStatus.OK)
             {
-                List<IKeyedDto> media = res.Value;
-                foreach (var m in media)
+                var rawList = res.Value;
+                foreach (var k in rawList)
                 {
-                    KeyedMediumDto dto = (KeyedMediumDto)m;
-                    var val = new MediumDto(dto.Title, dto.Year, dto.MediumType, dto.Location, dto.HasGermanSubtitles);
-                    Media.Add(val);
+                    var m = (KeyedMediumDto)k;
+                    var dto = new MediumDto(m.Title,
+                                            m.Year,
+                                            m.MediumType,
+                                            m.Location,
+                                            m.HasGermanSubtitles);
+                    items.Add(dto);
                 }
             }
-           
+            Media = new PaginatedList<MediumDto>(items, _totalRows, pageIndex.Value, PageSize);
         }
 
         private async Task InitDataAsync()

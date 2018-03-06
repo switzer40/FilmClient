@@ -26,5 +26,6 @@ namespace FilmClient.Pages.Shared
         OperationResult<IKeyedDto> GetLastEntry();
         OperationStatus Update(T dto);
         string KeyFrom(T dto);
+        void SetController(string controller);
     }
 }

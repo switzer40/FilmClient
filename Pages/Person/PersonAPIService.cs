@@ -18,7 +18,7 @@ namespace FilmClient.Pages.Person
     {
         public PersonAPIService(IErrorService eservice) : base(eservice)
         {
-            _controller = "Person";
+            SetController("Person");
         }
         public override async Task<OperationResult<IKeyedDto>> AddAsync(PersonDto dto)
         {
@@ -45,7 +45,7 @@ namespace FilmClient.Pages.Person
             }
             return new OperationResult<int>(status, retVal);
         }
-
+        
         public override async Task<OperationStatus> DeleteAsync(string key)
         {
             _action = "Delete";
@@ -77,14 +77,12 @@ namespace FilmClient.Pages.Person
         {
             List<IKeyedDto> retVal = default;
             var stringResponse = await StringResponseForGetAllAsync(pageIndex, pageSize);
-            var result = JsonConvert.DeserializeObject<OperationResult<List<IKeyedDto>>>(stringResponse);
+            var result = JsonConvert.DeserializeObject<OperationResult<List<KeyedPersonDto>>>(stringResponse);
             var status = result.Status;
             if (status == OKStatus)
             {
                 retVal = new List<IKeyedDto>();
-                var list = result.Value
-                    .Skip(pageIndex * pageSize)
-                    .Take(pageSize).ToList();
+                var list = result.Value.ToList();                    
                 foreach (var k in list)
                 {
                     retVal.Add(k);
@@ -97,7 +95,7 @@ namespace FilmClient.Pages.Person
         {
             KeyedPersonDto retVal = default;
             var stringResponse = await StringResponseForGetByKeyAsync(key);
-            var result = JsonConvert.DeserializeObject<OperationResult<IKeyedDto>>(stringResponse);
+            var result = JsonConvert.DeserializeObject<OperationResult<KeyedPersonDto>>(stringResponse);
             var status = result.Status;
             if (status == OKStatus)
             {

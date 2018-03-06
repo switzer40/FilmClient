@@ -17,32 +17,28 @@ namespace FilmClient.Pages.Medium
     {
         public MediumAPIService(IErrorService eservice) : base(eservice)
         {
-            _controller = "Medium";
+            SetController("Medium");
         }
         public override async Task<OperationResult<IKeyedDto>> AddAsync(MediumDto dto)
         {
             KeyedMediumDto retVal = default;
             var stringResponse = await StringResponseForAddAsync(dto);
-            var result = JsonConvert.DeserializeObject<OperationResult<IKeyedDto>>(stringResponse);
-            var status = result.Status;
+            var res = JsonConvert.DeserializeObject<OperationResult<KeyedMediumDto>>(stringResponse);
+            var status = res.Status;
             if (status == OKStatus)
             {
-                retVal = (KeyedMediumDto)result.Value;
+                retVal = res.Value;
             }
             return new OperationResult<IKeyedDto>(status, retVal);
         }
 
         public override async Task<OperationResult<int>> CountAsync()
         {
-            int retVal = 0;
+            int count = 0;
             var stringResponse = await StringResponseForCountAsync();
-            var result = JsonConvert.DeserializeObject<OperationResult<int>>(stringResponse);
-            var status = result.Status;
-            if (status == OKStatus)
-            {
-                retVal = (int)result.Value;
-            }
-            return new OperationResult<int>(status, retVal);
+            var res = JsonConvert.DeserializeObject<OperationResult<int>>(stringResponse);
+            count = res.Value;
+            return new OperationResult<int>(res.Status, count);
         }
 
         public override async Task<OperationStatus> DeleteAsync(string key)
@@ -58,7 +54,7 @@ namespace FilmClient.Pages.Medium
         {
             List<IKeyedDto> retVal = default;
             var stringResponse = await StringResponseForGetAbsolutelyAllAsync();
-            var result = JsonConvert.DeserializeObject<OperationResult<List<KeyedPersonDto>>>(stringResponse);
+            var result = JsonConvert.DeserializeObject<OperationResult<List<KeyedMediumDto>>>(stringResponse);
             var status = result.Status;
             if (status == OKStatus)
             {
@@ -76,14 +72,12 @@ namespace FilmClient.Pages.Medium
         {
             List<IKeyedDto> retVal = default;
             var stringResponse = await StringResponseForGetAllAsync(pageIndex, pageSize);
-            var result = JsonConvert.DeserializeObject<OperationResult<List<IKeyedDto>>>(stringResponse);
+            var result = JsonConvert.DeserializeObject<OperationResult<List<KeyedMediumDto>>>(stringResponse);
             var status = result.Status;
             if (status == OKStatus)
             {
                 retVal = new List<IKeyedDto>();
-                var list = result.Value
-                    .Skip(pageIndex * pageSize)
-                    .Take(pageSize).ToList();
+                var list = result.Value.ToList();
                 foreach (var k in list)
                 {
                     retVal.Add(k);
@@ -96,13 +90,13 @@ namespace FilmClient.Pages.Medium
         {
             KeyedMediumDto retVal = default;
             var stringResponse = await StringResponseForGetByKeyAsync(key);
-            var result = JsonConvert.DeserializeObject<OperationResult<IKeyedDto>>(stringResponse);
+            var result = JsonConvert.DeserializeObject<OperationResult<KeyedMediumDto>>(stringResponse);
             var status = result.Status;
             if (status == OKStatus)
             {
                 retVal = (KeyedMediumDto)result.Value;
             }
-            return new OperationResult<IKeyedDto>(status, retVal); ;
+            return new OperationResult<IKeyedDto>(status, retVal);
         }
 
         public async Task<OperationResult<MediumDto>> GetByTitleYearAndMediumTypeAsync(string title, short year, string mediumType)
@@ -110,7 +104,7 @@ namespace FilmClient.Pages.Medium
             MediumDto retVal = default;
             var key = _keyService.ConstructMediumKey(title, year, mediumType);
             var res = await GetByKeyAsync(key);
-            if (res.Status == OperationStatus.OK)
+            if (res.Status == OKStatus)
             {
                 var k = (KeyedMediumDto)res.Value;
                 retVal = new MediumDto(k.Title, k.Year, k.MediumType, k.Location, k.HasGermanSubtitles);

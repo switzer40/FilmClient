@@ -21,11 +21,13 @@ namespace FilmClient.Pages.Film
         private readonly IPersonService _personService;
         private readonly IPersonMapper _personMapper;
         private readonly IFilmPersonService _filmPersonService;        
-        public InfoModel(IPersonService pservice,
+        public InfoModel(IFilmService service,
+                         IPersonService pservice,
                          IPersonMapper pMapper,
                          IFilmPersonService fpservice,
                          IErrorService eservice) : base(eservice)
         {
+            service.SetController("Film");
             _personService = pservice;
             _personMapper = pMapper;
             _filmPersonService = fpservice;
@@ -40,13 +42,12 @@ namespace FilmClient.Pages.Film
 
         public async Task<IActionResult> OnGetAsync(string key)
         {
-            var data = _keyService.DeconstructFilmKey(key);
-            Title = data.title;
-            Year = data.year;
-            Actors = await GetContributorsAsync(Title, Year, FilmConstants.Role_Actor);
-            Composers = await GetContributorsAsync(Title, Year, FilmConstants.Role_Composer);
-            Directors = await GetContributorsAsync(Title, Year, FilmConstants.Role_Director);
-            Scriptwriters = await GetContributorsAsync(Title, Year, FilmConstants.Role_Writer);
+            var (title, year) = _keyService.DeconstructFilmKey(key);
+           
+            Actors = await GetContributorsAsync(title, year, FilmConstants.Role_Actor);
+            Composers = await GetContributorsAsync(title, year, FilmConstants.Role_Composer);
+            Directors = await GetContributorsAsync(title, year, FilmConstants.Role_Director);
+            Scriptwriters = await GetContributorsAsync(title, year, FilmConstants.Role_Writer);
             return Page();
         }
 
