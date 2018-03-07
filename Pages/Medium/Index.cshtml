@@ -73,6 +73,9 @@
    class="btn btn-default @prevDisabled">
     Previous
 </a>
+<a class="btn btn-default disabled">
+    Page: @Model.Media.PageIndex
+</a>
 <a asp-page="./Index"
    asp-route-PageIndex="@(Model.Media.PageIndex + 1)"
    class="btn btn-default @nextDisabled">

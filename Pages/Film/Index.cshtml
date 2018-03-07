@@ -62,6 +62,9 @@
    class="btn btn-default @prevDisabled">
     Previous
 </a>
+<a class="btn btn-default disabled">
+    Page: @Model.Films.PageIndex
+</a>
 <a asp-page="./Index"
    asp-route-pageIndex="@(Model.Films.PageIndex + 1)"
    class="btn btn-default @nextDisabled">

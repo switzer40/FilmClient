@@ -3,144 +3,100 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FilmAPI.Common.Interfaces;
-using FilmAPI.Common.Services;
 using FilmAPI.Common.Utilities;
 
 namespace FilmClient.Pages.Shared
 {
-    public abstract class BaseMockService<T> : IService<T> where T : BaseDto
+    public class BaseMockService<T> : IService<T> where T : BaseDto
     {
-        protected Dictionary<string, T> _store;
-        protected IKeyService _keyService;
-        protected OperationStatus OKStatus = OperationStatus.OK;
-        public BaseMockService()
-        {
-            _store = new Dictionary<string, T>();
-            _keyService = new KeyService();
-        }
         public OperationResult<IKeyedDto> Add(T t)
         {
-            IKeyedDto retVal = default;
-            var key = KeyFrom(t);
-            _store[key] = t;
-            retVal = RetrieveKeyedDto(t);
-            return new OperationResult<IKeyedDto>(OKStatus, retVal);
+            throw new NotImplementedException();
         }
 
-        protected abstract IKeyedDto RetrieveKeyedDto(T t);
-
-
-        public async Task<OperationResult<IKeyedDto>> AddAsync(T dto)
+        public Task<OperationResult<IKeyedDto>> AddAsync(T dto)
         {
-            return await Task.Run(() => Add(dto));
+            throw new NotImplementedException();
         }
 
         public OperationResult<int> Count()
         {
-            int count = _store.Values.Count;
-            return new OperationResult<int>(OKStatus, count);
+            throw new NotImplementedException();
         }
 
-        public async Task<OperationResult<int>> CountAsync()
+        public Task<OperationResult<int>> CountAsync()
         {
-            return await Task.Run(() => Count());
+            throw new NotImplementedException();
         }
 
         public OperationStatus Delete(string key)
         {
-            _store.Remove(key);
-            return OKStatus;
+            throw new NotImplementedException();
         }
 
-        public async Task<OperationStatus> DeleteAsync(string key)
+        public Task<OperationStatus> DeleteAsync(string key)
         {
-            return await Task.Run(() => Delete(key));
+            throw new NotImplementedException();
         }
 
         public OperationResult<List<IKeyedDto>> GetAbsolutelyAll()
         {
-            List<IKeyedDto> retVal = new List<IKeyedDto>();
-            foreach (var k in _store.Values)
-            {
-                var val = RetrieveKeyedDto(k);
-                retVal.Add(val);
-            }
-            return new OperationResult<List<IKeyedDto>>(OKStatus, retVal);
+            throw new NotImplementedException();
         }
 
-        public async Task<OperationResult<List<IKeyedDto>>> GetAbsolutelyAllAsync()
+        public Task<OperationResult<List<IKeyedDto>>> GetAbsolutelyAllAsync()
         {
-            return await Task.Run(() => GetAbsolutelyAll());
+            throw new NotImplementedException();
         }
 
         public OperationResult<List<IKeyedDto>> GetAll(int pageIndex, int pageSize)
         {
-            List<IKeyedDto> retVal = new List<IKeyedDto>();
-            var list = _store.Values
-                .Skip(pageIndex * pageSize)
-                .Take(pageSize).ToList();
-            foreach (var k in list)
-            {
-                var val = RetrieveKeyedDto(k);
-                retVal.Add(val);
-            }
-            return new OperationResult<List<IKeyedDto>>(OKStatus, retVal);
+            throw new NotImplementedException();
         }
 
-        public async Task<OperationResult<List<IKeyedDto>>> GetAllAsync(int pageIndex, int pageSize)
+        public Task<OperationResult<List<IKeyedDto>>> GetAllAsync(int pageIndex, int pageSize)
         {
-            return await Task.Run(() => GetAll(pageIndex, pageSize));
+            throw new NotImplementedException();
         }
 
         public OperationResult<IKeyedDto> GetByKey(string key)
         {
-            IKeyedDto retVal = (IKeyedDto)_store.Values
-                .Where(k => k.Key == key).FirstOrDefault();
-            return new OperationResult<IKeyedDto>(OKStatus, retVal);
+            throw new NotImplementedException();
         }
 
-        public async Task<OperationResult<IKeyedDto>> GetByKeyAsync(string key)
+        public Task<OperationResult<IKeyedDto>> GetByKeyAsync(string key)
         {
-            return await Task.Run(() => GetByKey(key));
+            throw new NotImplementedException();
         }
 
-        public OperationResult<IKeyedDto> GetLastEntry()
+        public Task<OperationResult<IKeyedDto>> GetLastEntryAsync()
         {
-            IKeyedDto retVal = (IKeyedDto)_store.Values
-                .LastOrDefault();
-            return new OperationResult<IKeyedDto>(OKStatus, retVal);
+            throw new NotImplementedException();
         }
 
-        public async Task<OperationResult<IKeyedDto>> GetLastEntryAsync()
+        public string KeyFrom(T dto)
         {
-            return await Task.Run(() => GetLastEntry());
+            throw new NotImplementedException();
         }
 
-        public abstract string KeyFrom(T dto);
-
-
-        public async Task<string> KeyFromAsync(T dto)
+        public Task<string> KeyFromAsync(T dto)
         {
-            return await Task.Run(() => KeyFrom(dto));
+            throw new NotImplementedException();
+        }
+
+        public void SetController(string controller)
+        {
+            throw new NotImplementedException();
         }
 
         public OperationStatus Update(T dto)
         {
-            var storedEntity = RetrieveKeyedDto(_store[dto.Key]);
-            SpecificCopy(storedEntity, dto);
-            return OKStatus;
+            throw new NotImplementedException();
         }
 
-        protected abstract void SpecificCopy(IKeyedDto target, T source);
-
-
-        public async Task<OperationStatus> UpdateAsync(T dto)
+        public Task<OperationStatus> UpdateAsync(T dto)
         {
-            return await Task.Run(() => Update(dto));
+            throw new NotImplementedException();
         }
-
-        public abstract Task<PaginatedList<T>> CurrentPageAsync(int pageIndex, int pageSize);
-
-        public abstract void SetController(string controller);        
     }
 }

@@ -10,7 +10,8 @@ namespace FilmClient.Pages.Shared
         public PaginatedList(List<T>items, int count, int pageIndex, int pageSize)
         {
             AddRange(items);
-            LastPage = (int)Math.Floor(count / (double)pageSize);
+            var rest = count % pageSize;
+            LastPage = (rest != 0) ? count / pageSize : (count / pageSize) - 1;
             TypicalEntry = items.FirstOrDefault();
             PageIndex = pageIndex;
         }

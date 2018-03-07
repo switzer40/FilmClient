@@ -8,9 +8,14 @@ using System.Threading.Tasks;
 
 namespace FilmClient.Pages.FilmPerson
 {
-    public class FilmPersonMockService : BaseMockService<FilmPersonDto>, IFilmPersonService
+    public class FilmPersonMockService : BaseMockService<FilmPersonModel>, IFilmPersonService
     {
-        public override Task<PaginatedList<FilmPersonDto>> CurrentPageAsync(int pageIndex, int pageSize)
+        public OperationResult<IKeyedDto> Add(FilmPersonDto t)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<OperationResult<IKeyedDto>> AddAsync(FilmPersonDto dto)
         {
             throw new NotImplementedException();
         }
@@ -25,22 +30,22 @@ namespace FilmClient.Pages.FilmPerson
             throw new NotImplementedException();
         }
 
-        public override string KeyFrom(FilmPersonDto dto)
+        public string KeyFrom(FilmPersonDto dto)
         {
             throw new NotImplementedException();
         }
 
-        public override void SetController(string controller)
+        public Task<string> KeyFromAsync(FilmPersonDto dto)
         {
             throw new NotImplementedException();
         }
 
-        protected override IKeyedDto RetrieveKeyedDto(FilmPersonDto t)
+        public OperationStatus Update(FilmPersonDto dto)
         {
             throw new NotImplementedException();
         }
 
-        protected override void SpecificCopy(IKeyedDto target, FilmPersonDto source)
+        public Task<OperationStatus> UpdateAsync(FilmPersonDto dto)
         {
             throw new NotImplementedException();
         }

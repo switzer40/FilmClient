@@ -24,7 +24,7 @@ namespace FilmClient.Pages.Person
         {
             KeyedPersonDto retVal = default;
             var stringResponse = await StringResponseForAddAsync(dto);
-            var result = JsonConvert.DeserializeObject<OperationResult<IKeyedDto>>(stringResponse);
+            var result = JsonConvert.DeserializeObject<OperationResult<KeyedPersonDto>>(stringResponse);
             var status = result.Status;
             if (status == OKStatus)
             {
@@ -116,18 +116,6 @@ namespace FilmClient.Pages.Person
                 retVal = new PersonDto(k.LastName, k.Birthdate, k.FirstMidName);
             }
             return new OperationResult<PersonDto>(status, retVal);
-        }
-
-        public override OperationResult<IKeyedDto> GetLastEntry()
-        {
-            KeyedPersonDto retVal = default;
-            var res = GetAbsolutelyAll();
-            var status = res.Status;
-            if (status == OKStatus)
-            {
-                retVal = (KeyedPersonDto)res.Value.LastOrDefault();
-            }
-            return new OperationResult<IKeyedDto>(status, retVal);
         }
 
         public override string KeyFrom(PersonDto dto)

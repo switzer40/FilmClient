@@ -112,18 +112,6 @@ namespace FilmClient.Pages.Medium
             return new OperationResult<MediumDto>(res.Status, retVal);
         }
 
-        public override OperationResult<IKeyedDto> GetLastEntry()
-        {
-            KeyedMediumDto retVal = default;
-            var res = GetAbsolutelyAll();
-            var status = res.Status;
-            if (status == OKStatus)
-            {
-                retVal = (KeyedMediumDto)res.Value.LastOrDefault();
-            }
-            return new OperationResult<IKeyedDto>(status, retVal);
-        }
-
         public override string KeyFrom(MediumDto dto)
         {
             return _keyService.ConstructMediumKey(dto.Title, dto.Year, dto.MediumType);

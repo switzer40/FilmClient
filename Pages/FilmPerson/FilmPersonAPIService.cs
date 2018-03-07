@@ -29,6 +29,7 @@ namespace FilmClient.Pages.FilmPerson
             {
                 retVal = (KeyedFilmPersonDto)result.Value;
             }
+
             return new OperationResult<IKeyedDto>(status, retVal);
         }
 
@@ -143,18 +144,6 @@ namespace FilmClient.Pages.FilmPerson
                 }
             }
             return new OperationResult<List<IKeyedDto>>(status, retVal);
-        }
-
-        public override OperationResult<IKeyedDto> GetLastEntry()
-        {
-            KeyedFilmPersonDto retVal = default;
-            var res = GetAbsolutelyAll();
-            var status = res.Status;
-            if (status == OKStatus)
-            {
-                retVal = (KeyedFilmPersonDto)res.Value.LastOrDefault();
-            }
-            return new OperationResult<IKeyedDto>(status, retVal);
         }
 
         public override string KeyFrom(FilmPersonDto dto)

@@ -23,7 +23,6 @@ namespace FilmClient.Pages.Shared
         OperationStatus Delete(string key);
         OperationResult<List<IKeyedDto>> GetAbsolutelyAll();
         OperationResult<List<IKeyedDto>> GetAll(int pageIndex, int pageSize);
-        OperationResult<IKeyedDto> GetLastEntry();
         OperationStatus Update(T dto);
         string KeyFrom(T dto);
         void SetController(string controller);

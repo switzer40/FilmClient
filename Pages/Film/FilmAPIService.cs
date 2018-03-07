@@ -113,18 +113,6 @@ namespace FilmClient.Pages.Film
             return new OperationResult<FilmDto>(status, retVal);
         }
 
-        public override OperationResult<IKeyedDto> GetLastEntry()
-        {
-            KeyedFilmDto retVal = default;
-            var res = GetAbsolutelyAll();
-            var status = res.Status;
-            if (status == OKStatus)
-            {
-                retVal = (KeyedFilmDto)res.Value.LastOrDefault();
-            }
-            return new OperationResult<IKeyedDto>(status, retVal);
-        }
-
         public override string KeyFrom(FilmDto dto)
         {
             return _keyService.ConstructFilmKey(dto.Title, dto.Year);

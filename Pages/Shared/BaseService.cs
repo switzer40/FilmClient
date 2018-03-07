@@ -112,12 +112,22 @@ namespace FilmClient.Pages.Shared
             throw new NotImplementedException();
         }
 
-        public async Task<OperationResult<IKeyedDto>> GetLastEntryAsync()
+        public OperationResult<IKeyedDto> GetLastEntry()
         {
-            return await Task.Run(() => GetLastEntry());
+            // Not needed here
+            return new OperationResult<IKeyedDto>(OKStatus);
         }
 
-        public abstract OperationResult<IKeyedDto> GetLastEntry();
+        public async Task<OperationResult<IKeyedDto>> GetLastEntryAsync()
+        {
+            IKeyedDto retVal = default;
+            var res = await GetAbsolutelyAllAsync();
+            if (res.Status == OKStatus)
+            {
+                retVal = res.Value.LastOrDefault();
+            }
+            return new OperationResult<IKeyedDto>(res.Status, retVal);
+        }
 
         protected OperationStatus StatusFromResponse(HttpResponseMessage response)
         {
