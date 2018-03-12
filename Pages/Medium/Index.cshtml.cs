@@ -29,10 +29,9 @@ namespace FilmClient.Pages.Medium
         {
             await InitDataAsync();
             var items = new List<MediumDto>();
-            var res = await _service.GetAllAsync(pageIndex.Value, PageSize);
-            if (res.Status == OperationStatus.OK)
+            var rawList = await _service.GetAllAsync(pageIndex.Value, PageSize);
+            if (rawList != null)
             {
-                var rawList = res.Value;
                 foreach (var k in rawList)
                 {
                     var m = (KeyedMediumDto)k;
@@ -53,12 +52,8 @@ namespace FilmClient.Pages.Medium
             {
                 return; //initialize only once
             }
-            var  res  = await _service.CountAsync();
-            if (res.Status == OperationStatus.OK)
-            {
-                _totalRows = res.Value;
-                CalculateRowData(_totalRows);
-            }            
+            _totalRows  = await _service.CountAsync();
+            CalculateRowData(_totalRows);                       
         }        
     }
 }

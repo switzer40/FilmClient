@@ -9,6 +9,7 @@ using FilmAPI.Common.Services;
 using FilmClient.Pages.Shared;
 using FilmAPI.Common.Utilities;
 using FilmClient.Pages.Error;
+using FilmAPI.Common.DTOs;
 
 namespace FilmClient.Pages.Person
 {
@@ -32,10 +33,10 @@ namespace FilmClient.Pages.Person
                 return Page();
             }
 
-            var res = await _service.AddAsync(PersonToAdd);
-            var s = res.Status;
-            if (s != OperationStatus.OK)
+            var p = (KeyedPersonDto)await _service.AddAsync(PersonToAdd);
+            if (p == null)
             {
+                var s = OperationStatus.NotFound;
                 return HandleError(s, _action);
             }
 

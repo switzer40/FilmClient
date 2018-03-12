@@ -27,16 +27,15 @@ namespace FilmClient.Pages.Medium
         public MediumDto MediumToEdit { get; set; }
         public async Task<IActionResult> OnGetAsync(string key)
         {
-            var res = await _service.GetByKeyAsync(key);
-            var s = res.Status;
-            if (s == OperationStatus.OK)
+            var m = (KeyedMediumDto)await _service.GetByKeyAsync(key);
+            if (m != null)
             {
-                var m = (KeyedMediumDto)res.Value;
                 MediumToEdit = new MediumDto(m.Title, m.Year, m.MediumType, m.Location);
                 return Page();
             }
             else
             {
+                var s = OperationStatus.NotFound;
                 return HandleError(s, _action);
             }
         }
@@ -46,15 +45,8 @@ namespace FilmClient.Pages.Medium
             {
                 return Page();
             }
-            var s = await _service.UpdateAsync(MediumToEdit);
-            if (s == OperationStatus.OK)
-            {
-                return RedirectToPage("Index");
-            }
-            else
-            {
-                return HandleError(s, _action);
-            }
+            await _service.UpdateAsync(MediumToEdit);
+            return RedirectToPage("Index");            
         }
     }
 }

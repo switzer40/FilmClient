@@ -32,6 +32,7 @@ namespace FilmClient.Pages.Shared
         protected int _numberOfPages;
         protected int _pageNumber;
         protected int _lastPage;
+        protected OperationStatus NotFoundStatus = OperationStatus.NotFound;
         public IErrorService ErrorService { get; }
         public int PageNumber => _pageNumber;
         public int NumberOfPages => _numberOfPages;

@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FilmAPI.Common.Interfaces;
 using FilmAPI.Common.Services;
 using FilmAPI.Common.Utilities;
-using FilmClient.Pages.Error;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace FilmClient.Pages.Shared
 {
@@ -18,194 +18,222 @@ namespace FilmClient.Pages.Shared
         protected string _action;
         protected string _route;
         protected IKeyService _keyService;
-        protected IErrorService _errorService;
-        public BaseService(IErrorService eservice)
+        protected OperationStatus OKStatus = OperationStatus.OK;
+        public BaseService()
         {
             _client = GetClient();
-            _errorService = eservice;
             _keyService = new KeyService();
         }
-        public void SetController(string controller)
+
+        private HttpClient GetClient()
         {
-            _controller = controller;
-        }
-        protected HttpClient GetClient()
-        {
-            var client = new HttpClient
-            {
-                BaseAddress = new Uri("http://localhost:5000/")
-            };
+            var client = new HttpClient();
+            client.BaseAddress = new Uri("http://localhost:5000/");
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
             return client;
         }
-        protected OperationStatus OKStatus = OperationStatus.OK;
-        public OperationResult<IKeyedDto> Add(T t)
-        {
-            // Not neded here
-            return new OperationResult<IKeyedDto>(OKStatus);
-        }
-
-        public abstract Task<OperationResult<IKeyedDto>> AddAsync(T dto);
-
-
-        public OperationResult<int> Count()
-        {
-            // Not neded here
-            return new OperationResult<int>(OKStatus, 0);
-        }
-
-        public abstract Task<OperationResult<int>> CountAsync();
-
-
-        public OperationStatus Delete(string key)
-        {
-            // Not neded here
-            return OKStatus;
-        }
-
-        public abstract Task<OperationStatus> DeleteAsync(string key);
-
-
-        public OperationResult<List<IKeyedDto>> GetAbsolutelyAll()
-        {
-            // Not neded here
-            var list = new List<IKeyedDto>();
-            return new OperationResult<List<IKeyedDto>>(OKStatus, list);
-        }
-
-        public abstract Task<OperationResult<List<IKeyedDto>>> GetAbsolutelyAllAsync();
-
-
-        public OperationResult<List<IKeyedDto>> GetAll(int pageIndex, int pageSize)
-        {
-            // Not neded here
-            return new OperationResult<List<IKeyedDto>>(OKStatus);
-        }
-
-        public abstract Task<OperationResult<List<IKeyedDto>>> GetAllAsync(int pageIndex, int pageSize);
-
-
-        public OperationResult<IKeyedDto> GetByKey(string key)
-        {
-            // Not neded here
-            return new OperationResult<IKeyedDto>(OKStatus);
-        }
-
-        public abstract Task<OperationResult<IKeyedDto>> GetByKeyAsync(string key);
-
-        public async Task<string> KeyFromAsync(T dto)
-        {
-            return await Task.Run(() => KeyFrom(dto));
-        }
-
-        public abstract string KeyFrom(T dto);
-
-
-        public OperationStatus Update(T dto)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<OperationStatus> UpdateAsync(T dto)
-        {
-            throw new NotImplementedException();
-        }
-
-        public OperationResult<IKeyedDto> GetLastEntry()
-        {
-            // Not needed here
-            return new OperationResult<IKeyedDto>(OKStatus);
-        }
-
-        public async Task<OperationResult<IKeyedDto>> GetLastEntryAsync()
-        {
-            IKeyedDto retVal = default;
-            var res = await GetAbsolutelyAllAsync();
-            if (res.Status == OKStatus)
-            {
-                retVal = res.Value.LastOrDefault();
-            }
-            return new OperationResult<IKeyedDto>(res.Status, retVal);
-        }
-
-        protected OperationStatus StatusFromResponse(HttpResponseMessage response)
-        {
-            var result = OperationStatus.OK;
-            switch (response.StatusCode)
-            {
-                case HttpStatusCode.BadRequest:
-                    result = OperationStatus.BadRequest;
-                    break;
-                case HttpStatusCode.NotFound:
-                    result = OperationStatus.NotFound;
-                    break;
-                case HttpStatusCode.OK:
-                    result = OperationStatus.OK;
-                    break;
-                case HttpStatusCode.InternalServerError:
-                    result = OperationStatus.ServerError;
-                    break;
-                default:
-                    throw new Exception("Unexpected status code");
-            }
-            return result;
-        }
         protected void ComputeRoute(string arg = "")
         {
-            if (string.IsNullOrEmpty(arg))
-            {
-                _route = $"api/{_controller}/{_action}";
-            }
-            else
-            {
-                _route = $"api/{_controller}/{_action}/{arg}";
-            }
+            _route = (string.IsNullOrEmpty(arg)) ?
+                     $"api/{_controller}/{_action}" :
+                     $"api/{_controller}/{_action}/{arg}";            
         }
-        protected abstract StringContent ContentFromDto(BaseDto dto);
-        protected async Task<string> StringResponseForAddAsync(BaseDto dto)
+        public IKeyedDto Add(T t)
         {
+            // Not needed
+            throw new NotImplementedException();
+        }
+
+        public abstract Task<IKeyedDto> AddAsync(T dto);
+        
+
+        public int Count()
+        {
+            // Not needed
+            throw new NotImplementedException();
+        }
+
+        public abstract Task<int> CountAsync();
+        
+
+        public void Delete(string key)
+        {
+            // Not needed
+            throw new NotImplementedException();
+        }
+
+        public abstract Task DeleteAsync(string key);
+        
+
+        public List<IKeyedDto> GetAbsolutelyAll()
+        {
+                // Not needed
+                throw new NotImplementedException();
+        }
+
+        public abstract Task<List<IKeyedDto>> GetAbsolutelyAllAsync();
+        
+
+        public List<IKeyedDto> GetAll(int pageIndex, int pageSize)
+        {
+            // Not needed
+            throw new NotImplementedException();
+        }
+
+        public abstract Task<List<IKeyedDto>> GetAllAsync(int pageIndex, int pageSize);
+            
+        public IKeyedDto GetByKey(string key)
+        {
+            // Not needed
+            throw new NotImplementedException();
+        }
+
+        public abstract Task<IKeyedDto> GetByKeyAsync(string key);
+
+
+        public abstract Task<IKeyedDto> GetLastEntryAsync();
+
+
+        public abstract string KeyFrom(T dto);
+        
+
+        public void Update(T dto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public abstract Task UpdateAsync(T dto);
+        protected async Task<string> ResponseForAddAsync(BaseDto dto)
+        {
+            IBaseDto b = RecoverBaseDto(dto);
+            var jsonContent = new StringContent(JsonConvert.SerializeObject(b), Encoding.UTF8, "application/json");
             _action = "Add";
             ComputeRoute();
-            var jsonContent = ContentFromDto(dto);
             var response = await _client.PostAsync(_route, jsonContent);
             return await response.Content.ReadAsStringAsync();
+            
         }
-        protected async Task<string> StringResponseForCountAsync()
+        protected async Task<string> ResponseForCountAsync()
         {
             _action = "Count";
             ComputeRoute();
             var response = await _client.GetAsync(_route);
-            return await response.Content.ReadAsStringAsync();
+            var stringResponse = await response.Content.ReadAsStringAsync();
+            return stringResponse;
         }
-        protected async Task<string> StringResponseForGetAllAsync(int pageIndex, int pageSize)
+        protected async Task<string> ResponseForDeleteAsync(string key)
         {
-            _action = "GetAll";
-            ComputeRoute();
-            var route = _route + $"?pageIndex={pageIndex}&pageSize={pageSize}";
-            var response = await _client.GetAsync(route);
-            return await response.Content.ReadAsStringAsync();
-        }
-        protected async Task<string> StringResponseForGetByKeyAsync(string key)
-        {
-            _action = "GetByKey"; ;
+            _action = "Delete";
             ComputeRoute(key);
-            var response = await _client.GetAsync(_route);
+            var response = await _client.DeleteAsync(_route);
             return await response.Content.ReadAsStringAsync();
+           
         }
-        protected async Task<string> StringResponseForGetAbsolutelyAllAsync()
+        protected async Task<string> ResponseForGetAbsolutelyAllAsync()
         {
             _action = "GetAbsolutelyAll";
             ComputeRoute();
             var response = await _client.GetAsync(_route);
             return await response.Content.ReadAsStringAsync();
         }
-        protected async Task<string> StringResponseForDeleteAsync()
+        protected async Task<string> ResponseForGetAllAsync(int pageIndex, int pageSize)
         {
-            _action = "Delete";
+            _action = "GetAll";
             ComputeRoute();
-            var response = await _client.DeleteAsync(_route);
+            var queryString = $"?pageIndex={pageIndex}&pageSize={pageSize}";
+            var route = _route + queryString;
+            var response = await _client.GetAsync(route);
+            return await response.Content.ReadAsStringAsync();            
+        }
+        protected async Task<string> ResponseForGetByKey(string key)
+        {
+            _action = "GetByKey";
+            ComputeRoute(key);
+            var response = await _client.GetAsync(_route);
             return await response.Content.ReadAsStringAsync();
+        }
+        protected async Task<string> ResponseForLastEntryAsync()
+        {
+            _action = "GetLastEntry";
+            ComputeRoute();
+            var response = await _client.GetAsync(_route);
+            return await response.Content.ReadAsStringAsync();
+        }
+        protected string BuildExplanation(OperationStatus s)
+        {
+            return $"Status code: {s.Name}; ReasonForFailure; {s.ReasonForFailure}";
+        }
+        protected async Task<string> ResponseForUpdateAsync(BaseDto dto)
+        {
+            IBaseDto b = RecoverBaseDto(dto);
+            var jsonContent = new StringContent(JsonConvert.SerializeObject(b), Encoding.UTF8, "application/json");
+            _action = "Edit";
+            ComputeRoute();
+            var response = await _client.PostAsync(_route, jsonContent);
+            return await response.Content.ReadAsStringAsync(); ;
+        }
+        protected abstract IBaseDto RecoverBaseDto(BaseDto dto);
+        protected  void HandleError(OperationStatus s)
+        {
+            throw new Exception(BuildExplanation(s));
+        }
+        protected abstract IKeyedDto ResultFromResponse(string response);
+        protected abstract List<IKeyedDto> ListResultFromResponse(string response);
+        protected int IntResultFromResponse(string response)
+        {
+            int result = 0;
+            try
+            {
+                var res = JsonConvert.DeserializeObject<OperationResult<int>>(response);
+                var status = res.Status;
+                if (status == OKStatus)
+                {
+                    result = res.Value;
+                }
+                else
+                {
+                    HandleError(status);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return result;
+        }
+        protected OperationStatus StatusResultFromResponse(string response)
+        {
+            OperationStatus result = OKStatus;
+            try
+            {
+                var s = JsonConvert.DeserializeObject<OperationStatus>(response);
+                if (s != OKStatus)
+                {
+                    HandleError(s);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return result;
+        }
+        protected void VoidResultFromResponse(string response)
+        {
+            try
+            {
+                var s = JsonConvert.DeserializeObject<OperationStatus>(response);
+                if (s != OKStatus)
+                {
+                    HandleError(s);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return;
         }
     }
 }

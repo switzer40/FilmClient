@@ -20,7 +20,6 @@ namespace FilmClient.Pages.Person
             BirthdateString = birthdate;
             FirstMidName = firstMidName;
             FullName = $"{FirstMidName} {LastName}";
-            ShortBirthdate = DateTime.Parse(BirthdateString).ToShortDateString();
         }
         public string FirstMidName { get; set; }
         [Required]

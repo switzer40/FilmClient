@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace FilmClient.Tests.Integrationests
+namespace FilmClient.Tests.Integrationests.FilmService
 {
-    class TestBase
+    class FilmBase
     {
     }
 }

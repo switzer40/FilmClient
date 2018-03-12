@@ -36,22 +36,15 @@ namespace FilmClient.Pages.FilmPerson
         {
             await InitDataAsync();
             var items = new List<FilmPersonModel>();
-            var res = await _service.GetAllAsync(pageIndex.Value, PageSize);
-            if (res.Status == OperationStatus.OK)
+            var rawList = await _service.GetAllAsync(pageIndex.Value, PageSize);
+            foreach (var k in rawList)
             {
-                var rawList = res.Value;
-                foreach (var k in rawList)
-                {
-                    var fp = (KeyedFilmPersonDto)k;
-                    var p = await GetPersonAsync(fp.LastName, fp.Birthdate);
-                    var model = new FilmPersonModel(fp.Title,
-                                                    fp.Year, fp.LastName,
-                                                    p.FirstMidName,
-                                                    fp.Birthdate,
-                                                    fp.Role);
-                    items.Add(model);
-                }
+                var fp = (KeyedFilmPersonDto)k;
+                var p = await GetPersonAsync(fp.LastName, fp.Birthdate);
+                var m = new FilmPersonModel(fp.Title, fp.Year, fp.LastName, p.FirstMidName, fp.Birthdate, fp.Role);
+                items.Add(m);
             }
+            
             FilmPeople = new PaginatedList<FilmPersonModel>(items, _totalRows, pageIndex.Value, PageSize);
         }
 
@@ -61,8 +54,7 @@ namespace FilmClient.Pages.FilmPerson
             {
                 return; //initialize only once
             }
-            var res = await _service.CountAsync();
-            _totalRows = (res.Status == OperationStatus.OK) ? res.Value : 0;
+            _totalRows = await _service.CountAsync();
             CalculateRowData(_totalRows);
         }
         
@@ -70,12 +62,11 @@ namespace FilmClient.Pages.FilmPerson
         {
             PersonDto result = null;
             var key = _keyService.ConstructPersonKey(lastName, birthdate);
-            var res = await _personService.GetByKeyAsync(key);
-            var s = res.Status;
+            var k = await _personService.GetByKeyAsync(key);
+            var p = (KeyedPersonDto)k;
 
-            if (s == OperationStatus.OK)
-            {
-                var p = (KeyedPersonDto) res.Value;
+            if (p != null)
+            {                
                 result = new PersonDto(p.LastName,p.Birthdate, p.FirstMidName);
             }
             return result;

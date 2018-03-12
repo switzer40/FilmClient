@@ -31,7 +31,7 @@ namespace FilmClient.Pages.Film
                 {
                     var key = (string)context.ActionArguments["key"];
                     var res = await _service.GetByKeyAsync(key);
-                    if (res.Status != OperationStatus.OK)
+                    if (res == null)
                     {
                         var data = _keyService.DeconstructFilmKey(key);
                         context.Result = new NotFoundObjectResult($"There is no film {data.title}({data.year})");

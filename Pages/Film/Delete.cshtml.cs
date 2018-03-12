@@ -42,18 +42,15 @@ namespace FilmClient.Pages.Film
                 return NotFound();
             }
 
-            var res = await _service.GetByKeyAsync(key);
-            var s = res.Status;
-            if (s == OperationStatus.OK)
+            var f = (KeyedFilmDto)await _service.GetByKeyAsync(key);
+            if (f != null)
             {
-                var f = (KeyedFilmDto)res.Value;
-                FilmToDelete.Title = f.Title;
-                FilmToDelete.Year = f.Year;
-                FilmToDelete.Length = f.Length;
+                FilmToDelete = new FilmDto(f.Title, f.Year, f.Length);               
                 return Page();
             }
             else
             {
+                var s = OperationStatus.NotFound;
                 return HandleError(s, _action);
             }            
         }
@@ -65,15 +62,8 @@ namespace FilmClient.Pages.Film
                 return NotFound();
             }
 
-            var s = await _service.DeleteAsync(key);
-            if (s == OperationStatus.OK)
-            {
-                return RedirectToPage("./index");
-            }
-            else
-            {
-                return HandleError(s, _action);
-            }
+            await _service.DeleteAsync(key);
+            return RedirectToPage("../Index");
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using FilmAPI.Common.Interfaces;
+﻿using FilmAPI.Common.DTOs;
+using FilmAPI.Common.Interfaces;
 using FilmAPI.Common.Services;
 using FilmAPI.Common.Utilities;
 using FilmClient.Pages.Shared;
@@ -31,9 +32,8 @@ namespace FilmClient.Pages.Medium
                 {
                     var dto = (MediumDto)context.ActionArguments["dto"];
                     var key = _keyService.ConstructMediumKey(dto.Title, dto.Year, dto.MediumType);
-                    var res = await _service.GetByKeyAsync(key);
-                    var s = res.Status;
-                    if (s == OperationStatus.OK)
+                    var m = (KeyedMediumDto) await _service.GetByKeyAsync(key);
+                    if (m != null)
                     {
                         context.Result = new BadRequestObjectResult($"A Medium with key {key} already exists");
                         return;

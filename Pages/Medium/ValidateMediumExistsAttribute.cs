@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FilmClient.Pages.Shared;
 using FilmAPI.Common.Utilities;
+using FilmAPI.Common.DTOs;
 
 namespace FilmClient.Pages.Medium
 {
@@ -30,15 +31,8 @@ namespace FilmClient.Pages.Medium
                 if (context.ActionArguments.ContainsKey("key"))
                 {
                     var key = (string)context.ActionArguments["key"];
-                    var res = await _service.GetByKeyAsync(key);
-                    var s = res.Status;
-                    if (s == OperationStatus.BadRequest)
-                    {
-                        context.Result = new BadRequestObjectResult($"The key {key} is malformed");
-                        return;
-                    }
-                    else
-                    if (s == OperationStatus.NotFound)
+                    var m =(KeyedMediumDto)await _service.GetByKeyAsync(key);                    
+                    if (m == null)
                     {
                         context.Result = new NotFoundObjectResult($"There is no medium with key {key}");
                         return;

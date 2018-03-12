@@ -1,121 +1,70 @@
 ﻿using FilmAPI.Common.DTOs;
 using FilmAPI.Common.Interfaces;
 using FilmAPI.Common.Utilities;
-using FilmClient.Pages.Error;
-using FilmClient.Pages.FilmPerson;
 using FilmClient.Pages.Shared;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FilmClient.Pages.Person
 {
     public class PersonAPIService : BaseService<PersonDto>, IPersonService
-    {
-        public PersonAPIService(IErrorService eservice) : base(eservice)
+    {        
+        public PersonAPIService() : base()
         {
-            SetController("Person");
+            _controller = "Person";
         }
-        public override async Task<OperationResult<IKeyedDto>> AddAsync(PersonDto dto)
+        public override async Task<IKeyedDto> AddAsync(PersonDto dto)
         {
-            KeyedPersonDto retVal = default;
-            var stringResponse = await StringResponseForAddAsync(dto);
-            var result = JsonConvert.DeserializeObject<OperationResult<KeyedPersonDto>>(stringResponse);
-            var status = result.Status;
-            if (status == OKStatus)
-            {
-                retVal = (KeyedPersonDto)result.Value;
-            }
-            return new OperationResult<IKeyedDto>(status, retVal);
+            var response = await ResponseForAddAsync(dto);
+            return ResultFromResponse(response);
         }
 
-        public override async Task<OperationResult<int>> CountAsync()
+        public override async Task<int> CountAsync()
         {
-            int retVal = 0;
-            var stringResponse = await StringResponseForCountAsync();
-            var result = JsonConvert.DeserializeObject<OperationResult<int>>(stringResponse);
-            var status = result.Status;
-            if (status == OKStatus)
-            {
-                retVal = (int)result.Value;
-            }
-            return new OperationResult<int>(status, retVal);
-        }
-        
-        public override async Task<OperationStatus> DeleteAsync(string key)
-        {
-            _action = "Delete";
-            ComputeRoute(key);
-            var response = await _client.DeleteAsync(_route);
-            var stringResponse = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<OperationStatus>(stringResponse);
+            var response = await ResponseForCountAsync();
+            return IntResultFromResponse(response);  
         }
 
-        public override async Task<OperationResult<List<IKeyedDto>>> GetAbsolutelyAllAsync()
+        public override async Task DeleteAsync(string key)
         {
-            List<IKeyedDto> retVal = default;
-            var stringResponse = await StringResponseForGetAbsolutelyAllAsync();
-            var result = JsonConvert.DeserializeObject<OperationResult<List<KeyedPersonDto>>>(stringResponse);
-            var status = result.Status;
-            if (status == OKStatus)
-            {
-                retVal = new List<IKeyedDto>();
-                var list = result.Value;
-                foreach (var k in list)
-                {
-                    retVal.Add(k);
-                }
-            }
-            return new OperationResult<List<IKeyedDto>>(status, retVal);
+            var response = await ResponseForDeleteAsync(key);
+            VoidResultFromResponse(response);
+            return;
         }
 
-        public override async Task<OperationResult<List<IKeyedDto>>> GetAllAsync(int pageIndex, int pageSize)
+        public override async Task<List<IKeyedDto>> GetAbsolutelyAllAsync()
         {
-            List<IKeyedDto> retVal = default;
-            var stringResponse = await StringResponseForGetAllAsync(pageIndex, pageSize);
-            var result = JsonConvert.DeserializeObject<OperationResult<List<KeyedPersonDto>>>(stringResponse);
-            var status = result.Status;
-            if (status == OKStatus)
-            {
-                retVal = new List<IKeyedDto>();
-                var list = result.Value.ToList();                    
-                foreach (var k in list)
-                {
-                    retVal.Add(k);
-                }
-            }
-            return new OperationResult<List<IKeyedDto>>(status, retVal);
+            var response = await ResponseForGetAbsolutelyAllAsync();
+            return ListResultFromResponse(response);
         }
 
-        public override async Task<OperationResult<IKeyedDto>> GetByKeyAsync(string key)
+        public override async Task<List<IKeyedDto>> GetAllAsync(int pageIndex, int pageSize)
         {
-            KeyedPersonDto retVal = default;
-            var stringResponse = await StringResponseForGetByKeyAsync(key);
-            var result = JsonConvert.DeserializeObject<OperationResult<KeyedPersonDto>>(stringResponse);
-            var status = result.Status;
-            if (status == OKStatus)
-            {
-                retVal = (KeyedPersonDto)result.Value;
-            }
-            return new OperationResult<IKeyedDto>(status, retVal);
+            var response = await ResponseForGetAllAsync(pageIndex, pageSize);
+            return ListResultFromResponse(response);
+        }
+
+        public override async Task<IKeyedDto> GetByKeyAsync(string key)
+        {
+            var response = await ResponseForGetByKey(key);
+            return ResultFromResponse(response);
         }
 
         public async Task<OperationResult<PersonDto>> GetByLastNameAndBirthdateAsync(string lastName, string birthdate)
         {
-            PersonDto retVal = default;
             var key = _keyService.ConstructPersonKey(lastName, birthdate);
-            var res = await GetByKeyAsync(key);
-            var status = res.Status;
-            if (status == OKStatus)
-            {
-                var k = (KeyedPersonDto)res.Value;
-                retVal = new PersonDto(k.LastName, k.Birthdate, k.FirstMidName);
-            }
-            return new OperationResult<PersonDto>(status, retVal);
+            var p = (KeyedPersonDto) await GetByKeyAsync(key);
+            var dto = new PersonDto(p.LastName, p.Birthdate, p.FirstMidName);
+            return new OperationResult<PersonDto>(OKStatus, dto);
+        }
+
+        public override async Task<IKeyedDto> GetLastEntryAsync()
+        {
+            var response = await ResponseForLastEntryAsync();
+            return ResultFromResponse(response);
         }
 
         public override string KeyFrom(PersonDto dto)
@@ -123,14 +72,42 @@ namespace FilmClient.Pages.Person
             return _keyService.ConstructPersonKey(dto.LastName, dto.BirthdateString);
         }
 
-        protected override StringContent ContentFromDto(BaseDto dto)
+        public override async Task UpdateAsync(PersonDto dto)
         {
-            var p = (PersonDto)dto;
-            var b = new BasePersonDto(p.LastName, p.BirthdateString, p.FirstMidName);
-            return new StringContent(JsonConvert.SerializeObject(b),
-                                     Encoding.UTF8,
-                                     "application/json");
+            var response = await ResponseForUpdateAsync(dto);
+            VoidResultFromResponse(response);
+            return;
         }
 
+        protected override List<IKeyedDto> ListResultFromResponse(string response)
+        {
+            List<IKeyedDto> result = new List<IKeyedDto>();
+            var res = JsonConvert.DeserializeObject<OperationResult<List<KeyedPersonDto>>>(response);
+            var status = res.Status;
+            if (status == OKStatus)
+            {
+                var rawList = res.Value;
+                foreach (var k in rawList)
+                {
+                    result.Add((IKeyedDto)k);
+                }
+            }
+            else
+            {
+                HandleError(status);
+            }            
+            return result;
+        }
+
+        protected override IBaseDto RecoverBaseDto(BaseDto dto)
+        {
+            var b = (PersonDto)dto;
+            return new BasePersonDto(b.LastName, b.BirthdateString, b.FirstMidName);
+        }
+
+        protected override IKeyedDto ResultFromResponse(string response)
+        {
+            return (IKeyedDto)(JsonConvert.DeserializeObject<OperationResult<KeyedPersonDto>>(response)).Value;
+        }
     }
 }

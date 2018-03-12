@@ -31,31 +31,24 @@ namespace FilmClient.Pages.Person
         
         public async Task<IActionResult> OnGetAsync(string key)
         {
-            var res = await _service.GetByKeyAsync(key);
-            var s = res.Status;
-            if (s == OperationStatus.OK)
+            var p = (KeyedPersonDto)await _service.GetByKeyAsync(key);
+
+            if (p != null)
             {
-                var p = (KeyedPersonDto)res.Value;
                 PersonToDelete = new PersonDto(p.LastName, p.Birthdate, p.FirstMidName);
                 return Page();
             }
             else
             {
+                var s = OperationStatus.NotFound;
                 return HandleError(s, _action);
             }
         }
         public async Task<IActionResult> OnPostAsync(string key)
         {
            
-            var s = await _service.DeleteAsync(key);
-            if (s== OperationStatus.OK)
-            {
-                return RedirectToPage("../Index");
-            }
-            else
-            {
-                return HandleError(s, _action);
-            }
+            await _service.DeleteAsync(key);
+            return RedirectToPage("../Index");            
         }        
     }
 }

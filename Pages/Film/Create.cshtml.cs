@@ -45,11 +45,14 @@ namespace FilmClient.Pages.Film
                 return Page();
             }
 
-            var res = await _service.AddAsync(FilmToAdd);
-            var s = res.Status;
-            if (s != OperationStatus.OK)
+            var f =  (KeyedFilmDto)await _service.AddAsync(FilmToAdd);
+            if (f != null)
             {
-                return HandleError(s, _action);
+                FilmToAdd = new FilmDto(f.Title, f.Year, f.Length);
+            }
+            else
+            {
+                HandleError(OperationStatus.NotFound, "Add");
             }
 
             return RedirectToPage("./Index");

@@ -29,28 +29,23 @@ namespace FilmClient.Pages.Medium
         public async Task<IActionResult> OnGetAsync(string key)
         {
             var lookupKey = (string.IsNullOrEmpty(key)) ? MediumToDelete.Key : key;
-            var res = await _service.GetByKeyAsync(lookupKey);
-            var s = res.Status;
-            if (s == OperationStatus.OK)
+            var m = (KeyedMediumDto)await _service.GetByKeyAsync(lookupKey);
+            if (m != null)
             {
-                var m = (KeyedMediumDto)res.Value;
                 MediumToDelete = new MediumDto(m.Title, m.Year, m.MediumType, m.Location, m.HasGermanSubtitles);
                 return Page();
             }
             else
             {
+                var s = OperationStatus.NotFound;
                 return HandleError(s, _action);
             }
             
         }
         public async Task<IActionResult> OnPostAsync(string key)
-        {
-            var s = await _service.DeleteAsync(key);
-            if (s == OperationStatus.OK)
-            {
-                return RedirectToPage("./index");
-            }
-            return RedirectToPage("../Error/Index");
+        { 
+            await _service.DeleteAsync(key);
+            return RedirectToPage("./index");            
         }
     }
 }

@@ -1,115 +1,70 @@
 ﻿using FilmAPI.Common.DTOs;
 using FilmAPI.Common.Interfaces;
 using FilmAPI.Common.Utilities;
-using FilmClient.Pages.Error;
 using FilmClient.Pages.Shared;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FilmClient.Pages.Medium
 {
     public class MediumAPIService : BaseService<MediumDto>, IMediumService
     {
-        public MediumAPIService(IErrorService eservice) : base(eservice)
+        public MediumAPIService() : base()
         {
-            SetController("Medium");
+            _controller = "Medium";
         }
-        public override async Task<OperationResult<IKeyedDto>> AddAsync(MediumDto dto)
+        public override async Task<IKeyedDto> AddAsync(MediumDto dto)
         {
-            KeyedMediumDto retVal = default;
-            var stringResponse = await StringResponseForAddAsync(dto);
-            var res = JsonConvert.DeserializeObject<OperationResult<KeyedMediumDto>>(stringResponse);
-            var status = res.Status;
-            if (status == OKStatus)
-            {
-                retVal = res.Value;
-            }
-            return new OperationResult<IKeyedDto>(status, retVal);
+            var response = await ResponseForAddAsync(dto);
+            return ResultFromResponse(response);
         }
 
-        public override async Task<OperationResult<int>> CountAsync()
+        public override async Task<int> CountAsync()
         {
-            int count = 0;
-            var stringResponse = await StringResponseForCountAsync();
-            var res = JsonConvert.DeserializeObject<OperationResult<int>>(stringResponse);
-            count = res.Value;
-            return new OperationResult<int>(res.Status, count);
+            var response = await ResponseForCountAsync();
+            return IntResultFromResponse(response);
         }
 
-        public override async Task<OperationStatus> DeleteAsync(string key)
+        public override async Task DeleteAsync(string key)
         {
-            _action = "Delete";
-            ComputeRoute(key);
-            var response = await _client.DeleteAsync(_route);
-            var stringResponse = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<OperationStatus>(stringResponse);
+            var response = await ResponseForDeleteAsync(key);
+            VoidResultFromResponse(response);
+            return;
         }
 
-        public override async Task<OperationResult<List<IKeyedDto>>> GetAbsolutelyAllAsync()
+        public override async Task<List<IKeyedDto>> GetAbsolutelyAllAsync()
         {
-            List<IKeyedDto> retVal = default;
-            var stringResponse = await StringResponseForGetAbsolutelyAllAsync();
-            var result = JsonConvert.DeserializeObject<OperationResult<List<KeyedMediumDto>>>(stringResponse);
-            var status = result.Status;
-            if (status == OKStatus)
-            {
-                retVal = new List<IKeyedDto>();
-                var list = result.Value;
-                foreach (var k in list)
-                {
-                    retVal.Add(k);
-                }
-            }
-            return new OperationResult<List<IKeyedDto>>(status, retVal);
+            var response = await ResponseForGetAbsolutelyAllAsync();
+            return ListResultFromResponse(response);
         }
 
-        public override async Task<OperationResult<List<IKeyedDto>>> GetAllAsync(int pageIndex, int pageSize)
+        public override async Task<List<IKeyedDto>> GetAllAsync(int pageIndex, int pageSize)
         {
-            List<IKeyedDto> retVal = default;
-            var stringResponse = await StringResponseForGetAllAsync(pageIndex, pageSize);
-            var result = JsonConvert.DeserializeObject<OperationResult<List<KeyedMediumDto>>>(stringResponse);
-            var status = result.Status;
-            if (status == OKStatus)
-            {
-                retVal = new List<IKeyedDto>();
-                var list = result.Value.ToList();
-                foreach (var k in list)
-                {
-                    retVal.Add(k);
-                }
-            }
-            return new OperationResult<List<IKeyedDto>>(status, retVal);
+            var response = await ResponseForGetAllAsync(pageIndex, pageSize);
+            return ListResultFromResponse(response);
         }
 
-        public override async Task<OperationResult<IKeyedDto>> GetByKeyAsync(string key)
+        public override async Task<IKeyedDto> GetByKeyAsync(string key)
         {
-            KeyedMediumDto retVal = default;
-            var stringResponse = await StringResponseForGetByKeyAsync(key);
-            var result = JsonConvert.DeserializeObject<OperationResult<KeyedMediumDto>>(stringResponse);
-            var status = result.Status;
-            if (status == OKStatus)
-            {
-                retVal = (KeyedMediumDto)result.Value;
-            }
-            return new OperationResult<IKeyedDto>(status, retVal);
+            var response = await ResponseForGetByKey(key);
+            return ResultFromResponse(response);
         }
 
         public async Task<OperationResult<MediumDto>> GetByTitleYearAndMediumTypeAsync(string title, short year, string mediumType)
         {
-            MediumDto retVal = default;
             var key = _keyService.ConstructMediumKey(title, year, mediumType);
-            var res = await GetByKeyAsync(key);
-            if (res.Status == OKStatus)
-            {
-                var k = (KeyedMediumDto)res.Value;
-                retVal = new MediumDto(k.Title, k.Year, k.MediumType, k.Location, k.HasGermanSubtitles);
-            }
-            return new OperationResult<MediumDto>(res.Status, retVal);
+            var m = (KeyedMediumDto)await GetByKeyAsync(key);
+            var val = new MediumDto(m.Title, m.Year, m.MediumType, m.Location, m.HasGermanSubtitles);
+            return new OperationResult<MediumDto>(OKStatus, val);
+        }
+
+        public override async Task<IKeyedDto> GetLastEntryAsync()
+        {
+            var response = await ResponseForLastEntryAsync();
+            return ResultFromResponse(response);
         }
 
         public override string KeyFrom(MediumDto dto)
@@ -117,13 +72,40 @@ namespace FilmClient.Pages.Medium
             return _keyService.ConstructMediumKey(dto.Title, dto.Year, dto.MediumType);
         }
 
-        protected override StringContent ContentFromDto(BaseDto dto)
+        public override async Task UpdateAsync(MediumDto dto)
+        {
+            var response = await ResponseForUpdateAsync(dto);
+            VoidResultFromResponse(response);
+            return;
+        }
+
+        protected override List<IKeyedDto> ListResultFromResponse(string response)
+        {
+            List<IKeyedDto> result = default;
+            var res = JsonConvert.DeserializeObject<OperationResult<List<KeyedMediumDto>>>(response);
+            var s = res.Status;
+            if (s == OKStatus)
+            {
+                result = new List<IKeyedDto>();
+                var list = res.Value;
+                foreach (var k in list)
+                {
+                    result.Add((IKeyedDto)k);
+                }
+            }
+            return result;
+        }
+
+        protected override IBaseDto RecoverBaseDto(BaseDto dto)
         {
             var m = (MediumDto)dto;
-            var b = new BaseMediumDto(m.Title, m.Year, m.MediumType, m.Location, m.GermanSubtitles);
-            return new StringContent(JsonConvert.SerializeObject(b),
-                                     Encoding.UTF8,
-                                     "application/json");
+            return new BaseMediumDto(m.Title, m.Year, m.MediumType, m.Location, m.GermanSubtitles);
+        }
+
+        protected override IKeyedDto ResultFromResponse(string response)
+        {
+            var res = JsonConvert.DeserializeObject<OperationResult<KeyedMediumDto>>(response);
+            return res.Value;                        
         }
     }
 }

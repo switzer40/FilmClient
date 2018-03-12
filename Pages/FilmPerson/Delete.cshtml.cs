@@ -30,16 +30,15 @@ namespace FilmClient.Pages.FilmPerson
                 return NotFound();
             }
             var res = await _service.GetByKeyAsync(key);
-            var s = res.Status;
-            if (s == OperationStatus.OK)
+            if (res != null)
             {
-                var fp = (KeyedFilmPersonDto)res.Value;
+                var fp = (KeyedFilmPersonDto)res;
                 FilmPersonToDelete = new FilmPersonDto(fp.Title, fp.Year, fp.LastName, fp.Birthdate, fp.Role);
                 return Page();
             }
             else
             {
-                return HandleError(s, "Get");
+                return HandleError(OperationStatus.NotFound, "Get");
             }
         }
         public async Task<IActionResult> OnPostAsync(string key)
@@ -49,11 +48,8 @@ namespace FilmClient.Pages.FilmPerson
                 return NotFound();
             }
 
-            var s = await _service.DeleteAsync(key);
-            if (s == OperationStatus.OK)
-            {
-                return RedirectToPage("./index");
-            }
+            await _service.DeleteAsync(key);
+            
 
             return RedirectToPage("../Error/Index");
         }

@@ -23,9 +23,9 @@ namespace FilmClient.Pages.FilmPerson
         public async Task<IActionResult> OnGetAsync()
         {
             var res = await _service.GetLastEntryAsync();
-            if (res.Status == OperationStatus.OK)
+            if (res != null)
             {
-                var dto  =(KeyedFilmPersonDto)res.Value;
+                var dto  =(KeyedFilmPersonDto)res;
                 FilmPersonToAdd = new FilmPersonDto(dto.Title, dto.Year, dto.LastName, dto.Birthdate, dto.Role);
             }
             return Page();
@@ -36,13 +36,15 @@ namespace FilmClient.Pages.FilmPerson
             {
                 return Page();
             }
-            var res = await _service.AddAsync(FilmPersonToAdd);
-            var s = res.Status;
-            if (s != OperationStatus.OK)
+            var fp = (KeyedFilmPersonDto)await _service.AddAsync(FilmPersonToAdd);
+            if (fp != null)
             {
-                return HandleError(s, _action);
+                FilmPersonToAdd = new FilmPersonDto(fp.Title, fp.Year, fp.LastName, fp.Birthdate, fp.Role);
             }
-
+            else
+            {
+                return HandleError(NotFoundStatus, _action);
+            }
             return RedirectToPage("./Index");
         }
     }

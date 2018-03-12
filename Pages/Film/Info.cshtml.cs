@@ -26,8 +26,7 @@ namespace FilmClient.Pages.Film
                          IPersonMapper pMapper,
                          IFilmPersonService fpservice,
                          IErrorService eservice) : base(eservice)
-        {
-            service.SetController("Film");
+        {           
             _personService = pservice;
             _personMapper = pMapper;
             _filmPersonService = fpservice;

@@ -29,17 +29,23 @@ namespace FilmClient.Pages.Person
         {
             await InitDataAsync();
             var items = new List<PersonDto>();
-            var res = await _service.GetAllAsync(pageIndex.Value, PageSize);
-            if (res.Status == OperationStatus.OK)
+            var rawList = await _service.GetAllAsync(pageIndex.Value, PageSize);
+            if (rawList != null)
             {
-                var rawList = res.Value;
                 foreach (var k in rawList)
                 {
                     var p = (KeyedPersonDto)k;
-                    var dto = new PersonDto(p.LastName, p.Birthdate, p.FirstMidName);
-                    items.Add(dto);
+                    var val = new PersonDto(p.LastName, p.Birthdate, p.FirstMidName);
+                    val.Key = _keyService.ConstructPersonKey(p.LastName, p.Birthdate);
+                    DateTime birth = DateTime.Parse(val.BirthdateString);
+                    val.ShortBirthdate = birth.ToShortDateString();
+;                    items.Add(val);
                 }
             }
+            else
+            {
+                HandleError(NotFoundStatus, _action);
+            }         
             People = new PaginatedList<PersonDto>(items, _totalRows, pageIndex.Value, PageSize);
         }
     
@@ -50,12 +56,8 @@ namespace FilmClient.Pages.Person
             {
                 return; //initialize only once
             }
-            var res = await _service.CountAsync();
-            if (res.Status == OperationStatus.OK)
-            {
-                _totalRows = res.Value;
-                CalculateRowData(_totalRows);
-            }           
+            _totalRows = await _service.CountAsync();
+            CalculateRowData(_totalRows);                      
         }
     }
 }

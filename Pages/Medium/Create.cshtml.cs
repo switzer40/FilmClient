@@ -34,12 +34,20 @@ namespace FilmClient.Pages.Medium
         }
         public async Task<IActionResult> OnGetAsync()
         {
-            var res = await _filmService.GetLastEntryAsync();
-            KeyedFilmDto f = (res.Status == OperationStatus.OK) ? (KeyedFilmDto)res.Value : default;
-            var d = _defaultervice.GetCurrentDefaultValues();
-            if (f != null)
+            KeyedMediumDto m = default;
+            try
             {
-                MediumToAdd = new MediumDto(f.Title, f.Year, d.MediumType, d.Location, true);
+                m = (KeyedMediumDto)await _service.GetLastEntryAsync();
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            var d = _defaultervice.GetCurrentDefaultValues();
+            if (m != null)
+            { 
+                MediumToAdd = new MediumDto(m.Title, m.Year, m.MediumType, m.Location, m.HasGermanSubtitles);
             }
             else
             {
@@ -61,14 +69,14 @@ namespace FilmClient.Pages.Medium
             {
                 return Page();
             }
-            var res = await _service.AddAsync(MediumToAdd);
-            var s = res.Status;
-            if (s == OperationStatus.OK)
+            var m =(KeyedMediumDto)await _service.AddAsync(MediumToAdd);
+            if (m != null)
             {
                 return RedirectToPage("./Index");
             }
             else
             {
+                var s = OperationStatus.NotFound;
                 return HandleError(s, _action);
             }
         }

@@ -27,18 +27,15 @@ namespace FilmClient.Pages.Film
         public FilmDto FilmToEdit { get; set; }
         public async Task<IActionResult> OnGetAsync(string key)
         {
-            var res = await _service.GetByKeyAsync(key);
-            var s = res.Status;
-            if (s == OperationStatus.OK)
+            var f = (KeyedFilmDto)await _service.GetByKeyAsync(key);
+            if (f != null)
             {
-                var f = (KeyedFilmDto) res.Value;
-                FilmToEdit.Title = f.Title;
-                FilmToEdit.Year = f.Year;
-                FilmToEdit.Length = f.Length;
+                FilmToEdit = new FilmDto(f.Title, f.Year, f.Length);                
                 return Page();
             }
             else
             {
+                var s = OperationStatus.NotFound;
                 return HandleError(s, _action);
             }
         }
@@ -48,16 +45,8 @@ namespace FilmClient.Pages.Film
             {
                 return Page();
             }
-            var res = await _service.UpdateAsync(FilmToEdit);
-            
-            if (res == OperationStatus.OK)
-            {
-                return RedirectToPage("Index");
-            }
-            else
-            {
-                return HandleError(res, _action);
-            }            
+            await _service.UpdateAsync(FilmToEdit);
+            return RedirectToPage("./Index");
         }
     }
 }

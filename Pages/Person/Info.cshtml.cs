@@ -22,8 +22,7 @@ namespace FilmClient.Pages.Person
         public InfoModel(IPersonService pservice,
                          IFilmPersonService fpservice,
                          IErrorService eservice) : base(eservice)
-        {
-            pservice.SetController("Person");
+       {
             _personService = pservice;
             _filmPersonService = fpservice;
             _keyService = new KeyService();
@@ -59,11 +58,9 @@ namespace FilmClient.Pages.Person
 
         private async Task<PersonDto> GetPersonAsync(string key)
         {
-            var res = await _personService.GetByKeyAsync(key);
-            var s = res.Status;
-            if (s == OperationStatus.OK)
+            var p = (KeyedPersonDto)await _personService.GetByKeyAsync(key);
+            if (p != null)
             {
-                var p = (KeyedPersonDto)res.Value;
                 return new PersonDto(p.LastName, p.Birthdate, p.FirstMidName);
             }
             else

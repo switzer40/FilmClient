@@ -3,100 +3,87 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FilmAPI.Common.Interfaces;
-using FilmAPI.Common.Utilities;
+using FilmAPI.Common.Services;
 
 namespace FilmClient.Pages.Shared
 {
-    public class BaseMockService<T> : IService<T> where T : BaseDto
+    public abstract  class BaseMockService<T> : IService<T> where T : BaseDto
     {
-        public OperationResult<IKeyedDto> Add(T t)
+        protected IKeyService _keyService;
+        public BaseMockService()
         {
-            throw new NotImplementedException();
+            _keyService = new KeyService();
+        }
+        public abstract IKeyedDto Add(T t);
+        
+
+        public async Task<IKeyedDto> AddAsync(T dto)
+        {
+            return await Task.Run(() => Add(dto));
         }
 
-        public Task<OperationResult<IKeyedDto>> AddAsync(T dto)
+        public int Count()
         {
-            throw new NotImplementedException();
+            var list = GetAbsolutelyAll();
+            return list.Count;
         }
 
-        public OperationResult<int> Count()
+        public async Task<int> CountAsync()
         {
-            throw new NotImplementedException();
+            return await Task.Run(() => Count());
         }
 
-        public Task<OperationResult<int>> CountAsync()
+        public abstract void Delete(string key);
+        
+
+        public async Task DeleteAsync(string key)
         {
-            throw new NotImplementedException();
+            await Task.Run(() => Delete(key));
         }
 
-        public OperationStatus Delete(string key)
+        public abstract List<IKeyedDto> GetAbsolutelyAll();
+       
+
+        public async Task<List<IKeyedDto>> GetAbsolutelyAllAsync()
         {
-            throw new NotImplementedException();
+            return await Task.Run(() => GetAbsolutelyAll());
         }
 
-        public Task<OperationStatus> DeleteAsync(string key)
+        public List<IKeyedDto> GetAll(int pageIndex, int pageSize)
         {
-            throw new NotImplementedException();
+            return GetAbsolutelyAll()
+                .Skip(pageIndex * pageSize)
+                .Take(pageSize).ToList();
         }
 
-        public OperationResult<List<IKeyedDto>> GetAbsolutelyAll()
+        public async Task<List<IKeyedDto>> GetAllAsync(int pageIndex, int pageSize)
         {
-            throw new NotImplementedException();
+            return await Task.Run(() => GetAll(pageIndex, pageSize));
         }
 
-        public Task<OperationResult<List<IKeyedDto>>> GetAbsolutelyAllAsync()
+        public abstract IKeyedDto GetByKey(string key);
+        
+
+        public async Task<IKeyedDto> GetByKeyAsync(string key)
         {
-            throw new NotImplementedException();
+            return await Task.Run(() => GetByKey(key));
         }
 
-        public OperationResult<List<IKeyedDto>> GetAll(int pageIndex, int pageSize)
+        public async Task<IKeyedDto> GetLastEntryAsync()
         {
-            throw new NotImplementedException();
+            return (await GetAbsolutelyAllAsync())
+                .LastOrDefault();
         }
 
-        public Task<OperationResult<List<IKeyedDto>>> GetAllAsync(int pageIndex, int pageSize)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract string KeyFrom(T dto);
 
-        public OperationResult<IKeyedDto> GetByKey(string key)
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task<OperationResult<IKeyedDto>> GetByKeyAsync(string key)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void Update(T dto);
+        
 
-        public Task<OperationResult<IKeyedDto>> GetLastEntryAsync()
+        public async Task UpdateAsync(T dto)
         {
-            throw new NotImplementedException();
-        }
-
-        public string KeyFrom(T dto)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<string> KeyFromAsync(T dto)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetController(string controller)
-        {
-            throw new NotImplementedException();
-        }
-
-        public OperationStatus Update(T dto)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<OperationStatus> UpdateAsync(T dto)
-        {
-            throw new NotImplementedException();
+            await Task.Run(() => Update(dto));
         }
     }
 }

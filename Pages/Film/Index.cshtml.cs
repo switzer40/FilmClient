@@ -30,16 +30,12 @@ namespace FilmClient.Pages.Film
         {
             await InitDataAsync();
             var items = new List<FilmDto>();
-            var res = await _service.GetAllAsync(pageIndex.Value, PageSize);
-            if (res.Status == OperationStatus.OK)
+            var rawList = await _service.GetAllAsync(pageIndex.Value, PageSize);
+            foreach (var k in rawList)
             {
-                var rawList = res.Value;
-                foreach (var k in rawList)
-                {
-                    var f = (KeyedFilmDto)k;
-                    var dto = new FilmDto(f.Title, f.Year, f.Length);
-                    items.Add(dto);
-                }
+                var f = (KeyedFilmDto)k;
+                var val = new FilmDto(f.Title, f.Year, f.Length);
+                items.Add(val);
             }
             Films = new PaginatedList<FilmDto>(items, _totalRows, pageIndex.Value, PageSize);
             Films.PageIndex = pageIndex.Value;
@@ -51,12 +47,8 @@ namespace FilmClient.Pages.Film
             {
                 return; //initialize only once
             }
-            var res = await _service.CountAsync();
-            if (res.Status == OperationStatus.OK)
-            {
-                _totalRows = res.Value;
-                CalculateRowData(_totalRows);
-            }            
+            _totalRows = await _service.CountAsync();
+            CalculateRowData(_totalRows);                     
         }
     }
 }

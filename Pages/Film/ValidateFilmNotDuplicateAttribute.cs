@@ -1,4 +1,5 @@
-﻿using FilmAPI.Common.Interfaces;
+﻿using FilmAPI.Common.DTOs;
+using FilmAPI.Common.Interfaces;
 using FilmAPI.Common.Services;
 using FilmAPI.Common.Utilities;
 using FilmClient.Pages.Shared;
@@ -34,11 +35,11 @@ namespace FilmClient.Pages.Film
                 {
                     var dto = (FilmDto)context.ActionArguments["dto"];
                     var key = _keyService.ConstructFilmKey(dto.Title, dto.Year);
-                    var res = await _service.GetByKeyAsync(key);
-                    var s = res.Status;
-                    if (s == OperationStatus.OK)
+                    var k =(KeyedFilmDto)await _service.GetByKeyAsync(key);
+                    if (k != null)
                     {
-                        context.Result = new BadRequestObjectResult($"A film {dto.Title}({dto.Year}) exists already.");
+
+                        context.Result = new BadRequestObjectResult($"A film {k.Title}({k.Year}) exists already.");
                         return;
                     }
                 }

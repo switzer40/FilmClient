@@ -8,14 +8,24 @@ using System.Threading.Tasks;
 
 namespace FilmClient.Pages.FilmPerson
 {
-    public class FilmPersonMockService : BaseMockService<FilmPersonModel>, IFilmPersonService
+    public class FilmPersonMockService : BaseMockService<FilmPersonDto>, IFilmPersonService
     {
-        public OperationResult<IKeyedDto> Add(FilmPersonDto t)
+        public override IKeyedDto Add(FilmPersonDto t)
         {
             throw new NotImplementedException();
         }
 
-        public Task<OperationResult<IKeyedDto>> AddAsync(FilmPersonDto dto)
+        public override void Delete(string key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override List<IKeyedDto> GetAbsolutelyAll()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IKeyedDto GetByKey(string key)
         {
             throw new NotImplementedException();
         }
@@ -30,22 +40,12 @@ namespace FilmClient.Pages.FilmPerson
             throw new NotImplementedException();
         }
 
-        public string KeyFrom(FilmPersonDto dto)
+        public override string KeyFrom(FilmPersonDto dto)
         {
             throw new NotImplementedException();
         }
 
-        public Task<string> KeyFromAsync(FilmPersonDto dto)
-        {
-            throw new NotImplementedException();
-        }
-
-        public OperationStatus Update(FilmPersonDto dto)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<OperationStatus> UpdateAsync(FilmPersonDto dto)
+        public override void Update(FilmPersonDto dto)
         {
             throw new NotImplementedException();
         }

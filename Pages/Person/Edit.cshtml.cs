@@ -23,35 +23,26 @@ namespace FilmClient.Pages.Person
 
 
         public async Task<IActionResult> OnGetAsync(string key)
-        {
+        {            
             if (string.IsNullOrEmpty(key))
             {
                 return new BadRequestObjectResult("key may not be null");
             }
-            var res = await _service.GetByKeyAsync(key);
-            var s = res.Status;
-            if (s == OperationStatus.OK)
+            var p = (KeyedPersonDto)await _service.GetByKeyAsync(key);
+            if (p != null)
             {
-                var p = (KeyedPersonDto)res.Value;
                 PersonToEdit = new PersonDto(p.LastName, p.Birthdate, p.FirstMidName);
                 return Page();
             }
             else
             {
-                return HandleError(s, _action);
+                return HandleError(NotFoundStatus, _action);
             }            
         }
         public async Task<IActionResult> OnPostAsync()
         {
-            var s = await _service.UpdateAsync(PersonToEdit);
-            if (s == OperationStatus.OK)
-            {
-                return RedirectToPage("./Index");
-            }
-            else
-            {
-                return HandleError(s, _action);
-            }
+            await _service.UpdateAsync(PersonToEdit);
+            return RedirectToPage("./Index");           
         }
     }
 }
