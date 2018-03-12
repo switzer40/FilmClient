@@ -42,7 +42,8 @@ namespace FilmClient.Pages.Film
         public async Task<IActionResult> OnGetAsync(string key)
         {
             var (title, year) = _keyService.DeconstructFilmKey(key);
-           
+            Title = title;
+            Year = year;
             Actors = await GetContributorsAsync(title, year, FilmConstants.Role_Actor);
             Composers = await GetContributorsAsync(title, year, FilmConstants.Role_Composer);
             Directors = await GetContributorsAsync(title, year, FilmConstants.Role_Director);
@@ -58,7 +59,9 @@ namespace FilmClient.Pages.Film
             foreach (var item in filmPeople)
             {
                 var fp = (KeyedFilmPersonDto)item;
-                var name = fp.LastName;
+                var res1 = await _personService.GetByLastNameAndBirthdateAsync(fp.LastName, fp.Birthdate);
+                var p = res1.Value;
+                var name = p.FullName;
                 var birthdate = fp.Birthdate;
                 result.Add((name, birthdate));
             }

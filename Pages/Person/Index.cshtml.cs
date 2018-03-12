@@ -24,28 +24,48 @@ namespace FilmClient.Pages.Person
             _keyService = new KeyService();
             _totalRows = 0;
         }
+       [BindProperty]
+        public string Filter { get; set; }
         public PaginatedList<PersonDto> People { get; set; }
-        public async Task OnGetAsync(int? pageIndex =0)
+        public async Task OnGetAsync(int? pageIndex =0, string searchString ="")
         {
-            await InitDataAsync();
+            
             var items = new List<PersonDto>();
-            var rawList = await _service.GetAllAsync(pageIndex.Value, PageSize);
-            if (rawList != null)
+            if (!string.IsNullOrEmpty(searchString))
             {
+                Filter = searchString;
+            }
+            if (!string.IsNullOrEmpty(Filter))
+            {
+                var rawList = await _service.GetAbsolutelyAllAsync();
                 foreach (var k in rawList)
                 {
                     var p = (KeyedPersonDto)k;
-                    var val = new PersonDto(p.LastName, p.Birthdate, p.FirstMidName);
-                    val.Key = _keyService.ConstructPersonKey(p.LastName, p.Birthdate);
-                    DateTime birth = DateTime.Parse(val.BirthdateString);
-                    val.ShortBirthdate = birth.ToShortDateString();
-;                    items.Add(val);
+                    if (p.LastName.Contains(Filter) || p.FirstMidName.Contains(Filter))
+                    {
+                        var val = new PersonDto(p.LastName, p.Birthdate, p.FirstMidName);
+                        items.Add(val);
+                        _totalRows = items.Count;
+                    }
                 }
             }
             else
             {
-                HandleError(NotFoundStatus, _action);
-            }         
+                await InitDataAsync();
+                var rawList = await _service.GetAllAsync(pageIndex.Value, PageSize);
+                if (rawList != null)
+                {
+                    foreach (var k in rawList)
+                    {
+                        var p = (KeyedPersonDto)k;
+                        var val = new PersonDto(p.LastName, p.Birthdate, p.FirstMidName);
+                        val.Key = _keyService.ConstructPersonKey(p.LastName, p.Birthdate);
+                        DateTime birth = DateTime.Parse(val.BirthdateString);
+                        val.ShortBirthdate = birth.ToShortDateString();
+                        ; items.Add(val);
+                    }
+                }
+            }
             People = new PaginatedList<PersonDto>(items, _totalRows, pageIndex.Value, PageSize);
         }
     

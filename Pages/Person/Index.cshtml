@@ -2,10 +2,21 @@
 @model FilmClient.Pages.Person.IndexModel
 @{
     ViewData["Title"] = "List All Person Entries";
+    var searchString = Model.Filter;
 }
 
 <h2>@ViewData["Title"]</h2>
 <div><a asp-page="./Create">Create a new Person entry</a></div>
+<form asp-page="./Index" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Findby name:
+            <input type="text" name="searchSttring" value="@searchString" />
+            <input type="submit" value="Search" class="btn btn-default" /> |
+            <a asp-page="./Index">Back to full list</a>
+        </p>
+    </div>
+</form>
 <table class="table table-bordered table-condensed table-striped table-responsive">
     <thead>
         <tr>
@@ -50,7 +61,7 @@
 </table>
 @{
     var prevDisabled = !Model.People.HasPrevious() ? "disabled" : "";
-    var nextDisabled = !Model.People.HasNext() ? "disabled" : "";
+    var nextDisabled = !Model.People.HasNext() ? "disabled" : "";    
 }
 <a asp-page="./Index"
    asp-route-PageIndex="0"
