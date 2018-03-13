@@ -46,9 +46,18 @@ namespace FilmClient.Pages.Person
         }
         public async Task<IActionResult> OnPostAsync(string key)
         {
+            try
+            {
+                await _service.DeleteAsync(key);
+                return RedirectToPage("../Index");
+            }
+            catch (Exception ex)
+            {
+
+                return HandleException(ex);
+            }
            
-            await _service.DeleteAsync(key);
-            return RedirectToPage("../Index");            
+                        
         }        
     }
 }

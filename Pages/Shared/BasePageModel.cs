@@ -77,6 +77,10 @@ namespace FilmClient.Pages.Shared
             }
             return result;
         }
+        protected IActionResult HandleException(Exception ex)
+        {
+            return new BadRequestResult();
+        }
 
         private string GetReason(OperationStatus status, string action)
         {
