@@ -1,6 +1,7 @@
 ﻿using FilmAPI.Common.Constants;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -8,12 +9,19 @@ namespace FilmClient.Pages.Default
 {
     public class DefaultService : IDefaultService
     {
+        private const string DEFAULTPATH = "./DefaultValues.txt";
         private DefaultDto _current;
         private Dictionary<string, DefaultDto> _store;
         public DefaultService()
         {
+            //LoadCurrent();
             _current = new DefaultDto();
             PopulateStore();
+        }
+
+       private void LoadCurrent()
+        {
+            throw new NotImplementedException();
         }
 
         private void PopulateStore()

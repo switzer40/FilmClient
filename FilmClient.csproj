@@ -27,4 +27,7 @@
       <HintPath>..\..\FilmAPI\FilmAPI.Common\bin\Debug\netcoreapp2.0\FilmAPI.Common.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Pages\DefaultValues\" />
+  </ItemGroup>
 </Project>

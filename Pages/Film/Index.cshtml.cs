@@ -26,9 +26,10 @@ namespace FilmClient.Pages.Film
         
         public PaginatedList<FilmDto> Films { get; set; }
 
-        public async Task OnGetAsync(int? pageIndex = 0)
+        public async Task OnGetAsync(int? pageIndex = 0, string searchString = "")
         {
             await InitDataAsync();
+            
             var items = new List<FilmDto>();
             var rawList = await _service.GetAllAsync(pageIndex.Value, PageSize);
             foreach (var k in rawList)

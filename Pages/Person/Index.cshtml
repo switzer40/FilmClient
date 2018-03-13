@@ -2,7 +2,7 @@
 @model FilmClient.Pages.Person.IndexModel
 @{
     ViewData["Title"] = "List All Person Entries";
-    var searchString = Model.Filter;
+    var searchString = ViewData["Filter"];
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -11,7 +11,7 @@
     <div class="form-actions no-color">
         <p>
             Findby name:
-            <input type="text" name="searchSttring" value="@searchString" />
+            <input type="text" name="searchString" value="@searchString" />
             <input type="submit" value="Search" class="btn btn-default" /> |
             <a asp-page="./Index">Back to full list</a>
         </p>
@@ -64,11 +64,13 @@
     var nextDisabled = !Model.People.HasNext() ? "disabled" : "";    
 }
 <a asp-page="./Index"
+   asp-route-filter="@ViewData["Filter"]"
    asp-route-PageIndex="0"
    class="btn btn-default">
     First
 </a>
 <a asp-page="./Index"
+   asp-route-filter="@ViewData["Filter"]"
    asp-route-PageIndex="@(Model.People.PageIndex- 1)"
    class="btn btn-default @prevDisabled">
     Previous
@@ -77,11 +79,13 @@
 Page: @Model.People.PageIndex
 </a>
 <a  asp-page="./Index"
+   asp-route-filter="@ViewData["Filter"]"
    asp-route-PageIndex="@(Model.People.PageIndex + 1)"
    class="btn btn-default @nextDisabled">
     Next
 </a>
 <a asp-page="./Index"
+   asp-route-filter="@ViewData["Filter"]"
    asp-route-PageIndex="@Model.People.LastPage"
    class="btn btn-default">
     Last

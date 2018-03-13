@@ -27,25 +27,28 @@ namespace FilmClient.Pages.Person
        [BindProperty]
         public string Filter { get; set; }
         public PaginatedList<PersonDto> People { get; set; }
-        public async Task OnGetAsync(int? pageIndex =0, string searchString ="")
+        public async Task OnGetAsync( string searchString, string filter, int? pageIndex =0)
         {
             
             var items = new List<PersonDto>();
             if (!string.IsNullOrEmpty(searchString))
             {
-                Filter = searchString;
+                ViewData["Filter"] = searchString;
             }
-            if (!string.IsNullOrEmpty(Filter))
+            var pageSize = PageSize;
+            if (!string.IsNullOrEmpty(searchString))
             {
                 var rawList = await _service.GetAbsolutelyAllAsync();
                 foreach (var k in rawList)
                 {
                     var p = (KeyedPersonDto)k;
-                    if (p.LastName.Contains(Filter) || p.FirstMidName.Contains(Filter))
+                    if (p.LastName.Contains(searchString) || p.FirstMidName.Contains(searchString))
                     {
                         var val = new PersonDto(p.LastName, p.Birthdate, p.FirstMidName);
+                        val.ShortBirthdate = DateTime.Parse(p.Birthdate).ToShortDateString();
                         items.Add(val);
                         _totalRows = items.Count;
+                        pageSize = _totalRows;
                     }
                 }
             }
@@ -66,7 +69,7 @@ namespace FilmClient.Pages.Person
                     }
                 }
             }
-            People = new PaginatedList<PersonDto>(items, _totalRows, pageIndex.Value, PageSize);
+            People = new PaginatedList<PersonDto>(items, _totalRows, pageIndex.Value, pageSize);
         }
     
 
