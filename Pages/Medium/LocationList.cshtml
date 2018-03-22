@@ -1,0 +1,81 @@
+﻿@page
+@using FilmAPI.Common.Constants;
+@model FilmClient.Pages.Medium.LocationListModel
+@{
+    ViewData["Title"] = "List media stored at a chosen location";
+    var left = FilmConstants.Location_Left;
+    var left1 = FilmConstants.Location_Left1;
+    var left2 = FilmConstants.Location_Left2;
+    var left3 = FilmConstants.Location_Left3;
+    var left4 = FilmConstants.Location_Left4;
+    var right = FilmConstants.Location_Right;
+    var right1 = FilmConstants.Location_Right1;
+    var right2 = FilmConstants.Location_Right2;
+    var right3 = FilmConstants.Location_Right3;
+    var right4 = FilmConstants.Location_Right4;
+    var top = FilmConstants.Location_Top;
+    var middle = FilmConstants.Location_Middle;
+    var bottom = FilmConstants.Location_Bottom;
+    var bd1 = FilmConstants.Location_BD1;
+    var bd2 = FilmConstants.Location_BD2;
+    var bd3 = FilmConstants.Location_BD3;
+    var bd4 = FilmConstants.Location_BD4;
+    var shelf1 = FilmConstants.Location_Shelf1;
+}
+
+<h2>@ViewData["Title"]</h2>
+<hr />
+<h3>Pick a location to list</h3>
+<hr />
+<div class="container">
+    <form method="post">
+        <div class="form-group">
+            <label asp-for="LocationToList" class="radio-inline">
+                <input type="radio" asp-for="LocationToList" value=@left>
+                @left
+            </label>
+            <label asp-for="LocationToList" class="radio-inline">
+                <input type="radio" asp-for="LocationToList" value=@left1>
+                @left1
+            </label>
+            <label asp-for="LocationToList" class="radio-inline">
+                <input type="radio" asp-for="LocationToList" value=@left2>
+                @left2
+            </label>
+            <label asp-for="LocationToList" class="radio-inline">
+                <input type="radio" asp-for="LocationToList" value=@left3>
+                @left3
+            </label>
+            <label asp-for="LocationToList" class="radio-inline">
+                <input type="radio" asp-for="LocationToList" value=@left4>
+                @left4
+            </label>
+        </div>
+        <div class="form-group">
+            <label asp-for="LocationToList" class="radio-inline">
+                <input type="radio" asp-for="LocationToList" value=@right>
+                @right
+            </label>
+            <label asp-for="LocationToList" class="radio-inline">
+                <input type="radio" asp-for="LocationToList" value=@right1>
+                @right1
+            </label>
+            <label asp-for="LocationToList" class="radio-inline">
+                <input type="radio" asp-for="LocationToList" value=@right2>
+                @right2
+            </label>
+            <label asp-for="LocationToList" class="radio-inline">
+                <input type="radio" asp-for="LocationToList" value=@right3>
+                @right3
+            </label>
+            <label asp-for="LocationToList" class="radio-inline">
+                <input type="radio" asp-for="LocationToList" value=@right4>
+                @right4
+            </label>
+        </div>
+        <div>
+            <input type="submit" value="List media" class="btn btn-default" />
+        </div>
+    </form>    
+</div>
+

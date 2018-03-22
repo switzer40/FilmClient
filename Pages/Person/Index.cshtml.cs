@@ -46,6 +46,7 @@ namespace FilmClient.Pages.Person
                     {
                         var val = new PersonDto(p.LastName, p.Birthdate, p.FirstMidName);
                         val.ShortBirthdate = DateTime.Parse(p.Birthdate).ToShortDateString();
+                        val.Key = _keyService.ConstructPersonKey(p.LastName, p.Birthdate);
                         items.Add(val);
                         _totalRows = items.Count;
                         pageSize = _totalRows;
