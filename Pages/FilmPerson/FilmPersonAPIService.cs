@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace FilmClient.Pages.FilmPerson
@@ -18,7 +19,15 @@ namespace FilmClient.Pages.FilmPerson
         }
         public override async Task<IKeyedDto> AddAsync(FilmPersonDto dto)
         {
-            var response = await ResponseForAddAsync(dto);
+            string response = "";
+            try
+            {
+                response = await ResponseForAddAsync(dto);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }            
             if (!string.IsNullOrEmpty(response))
             {
                 return ResultFromResponse(response);

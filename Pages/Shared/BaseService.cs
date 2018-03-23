@@ -106,13 +106,31 @@ namespace FilmClient.Pages.Shared
         public abstract Task UpdateAsync(T dto);
         protected async Task<string> ResponseForAddAsync(BaseDto dto)
         {
+            string result = "";
             IBaseDto b = RecoverBaseDto(dto);
             var jsonContent = new StringContent(JsonConvert.SerializeObject(b), Encoding.UTF8, "application/json");
             _action = "Add";
             ComputeRoute();
             var response = await _client.PostAsync(_route, jsonContent);
-            return await response.Content.ReadAsStringAsync();
-            
+            switch (response.StatusCode)
+            {
+                
+                case System.Net.HttpStatusCode.BadGateway:
+                    break;
+                case System.Net.HttpStatusCode.BadRequest:
+                    result = "BadRequest";
+                    break;                
+                case System.Net.HttpStatusCode.NotFound:
+                    result = "NotFound";
+                    break;                
+                case System.Net.HttpStatusCode.OK:
+                    result = await response.Content.ReadAsStringAsync();
+                    break;                
+                default:
+
+                    throw new Exception("UJnexpected status");
+            }
+            return result;            
         }
         protected async Task<string> ResponseForCountAsync()
         {
